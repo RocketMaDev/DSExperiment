@@ -14,9 +14,9 @@ unsigned int StackLength(const ArrayList *stack) {
 
 int StackPeek(const ArrayList *stack, NODE_TYPE *recv) {
     if (stack->size == 0)
-        return -ALERR_UNDERFLOW;
+        return -RERR_UNDERFLOW;
     *recv = stack->arr[stack->size - 1];
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 
 int StackPush(ArrayList *stack, NODE_TYPE v) {
@@ -25,8 +25,8 @@ int StackPush(ArrayList *stack, NODE_TYPE v) {
 
 int StackPop(ArrayList *stack, Nullable NODE_TYPE *recv) {
     if (stack->size == 0)
-        return -ALERR_UNDERFLOW;
+        return -RERR_UNDERFLOW;
     ArrayListDelete(stack, stack->size - 1, recv);
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 

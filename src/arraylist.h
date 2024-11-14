@@ -1,5 +1,6 @@
 #ifndef __ARRAY_LIST_H__
 #define __ARRAY_LIST_H__
+#include "rerror.h"
 
 #ifndef NODE_TYPE
 #   define NODE_TYPE int
@@ -15,15 +16,6 @@
 typedef int (*NODE_HOOK)(NODE_TYPE a, NODE_TYPE b);
 extern NODE_HOOK NodeCmp;
 #   endif
-
-enum {
-    ALERR_OK = 0,
-    ALERR_OOM = 1,
-    ALERR_OVERFLOW = 2,
-    ALERR_NOTFOUND = 3,
-    ALERR_UNDERFLOW = 4,
-    ALERR_NOTIMPLEMENTED = 5,
-};
 
 typedef struct {
     NODE_TYPE *arr;

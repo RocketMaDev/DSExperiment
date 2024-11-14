@@ -16,15 +16,15 @@ int Union(LinkedList *a, const LinkedList *b, LinkedList *ans) {
     if (!b->size) {
         if (ans)
             return LinkedListExtend(ans, a);
-        return -LLERR_OK;
+        return -RERR_OK;
     }
     gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     if (!gbuf1)
-        return -LLERR_OOM;
+        return -RERR_OOM;
     LinkedListTraverse((LinkedList *)b, cp_vals1);
     
     if (ans && LinkedListExtend(ans, a) < 0)
-        return -LLERR_OOM;
+        return -RERR_OOM;
     LinkedList *target = ans ? ans : a;
     for (unsigned int i = 0; i < b->size; i++)
         LinkedListRemove(target, gbuf1[i]);
@@ -33,14 +33,14 @@ int Union(LinkedList *a, const LinkedList *b, LinkedList *ans) {
 
 int Intersection(LinkedList *a, const LinkedList *b, LinkedList *ans) {
     if (!a->size)
-        return -LLERR_OK;
+        return -RERR_OK;
     if (!b->size) {
         LinkedListClear(ans ? ans : a);
-        return -LLERR_OK;
+        return -RERR_OK;
     }
     gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     if (!gbuf1)
-        return -LLERR_OOM;
+        return -RERR_OOM;
     LinkedListTraverse((LinkedList *)b, cp_vals1);
 
     unsigned int count = 0;
@@ -54,29 +54,29 @@ int Intersection(LinkedList *a, const LinkedList *b, LinkedList *ans) {
     LinkedList *target = ans ? ans : a;
     for (unsigned int i = 0; i < count; i++)
         if (LinkedListAppend(target, gbuf2[i]) < 0)
-            return -LLERR_OOM;
-    return -LLERR_OK;
+            return -RERR_OOM;
+    return -RERR_OK;
 }
 
 int Difference(LinkedList *a, const LinkedList *b, LinkedList *ans) {
     if (!a->size)
-        return -LLERR_OK;
+        return -RERR_OK;
     if (!b->size) {
         if (ans)
             return LinkedListExtend(ans, a);
-        return -LLERR_OK;
+        return -RERR_OK;
     }
     gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     if (!gbuf1)
-        return -LLERR_OOM;
+        return -RERR_OOM;
     LinkedListTraverse((LinkedList *)b, cp_vals1);
     
     if (ans && LinkedListExtend(ans, a) < 0)
-        return -LLERR_OOM;
+        return -RERR_OOM;
     LinkedList *target = ans ? ans : a;
     for (unsigned int i = 0; i < b->size; i++)
         LinkedListRemove(target, gbuf1[i]);
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 static int detected;
@@ -94,10 +94,10 @@ void detect_dup(unsigned int index, NODE_TYPE v) {
 
 int Purge(LinkedList *list) {
     if (!list->head)
-        return -LLERR_OK;
+        return -RERR_OK;
     todelete = (unsigned int *)malloc(sizeof(unsigned int) * list->size);
     if (!todelete)
-        return -LLERR_OOM;
+        return -RERR_OOM;
     for (unsigned int i = 0; i < list->size; i++) {
         detected = 0;
         assert(LinkedListGet(list, i, &t) == 0);
@@ -109,7 +109,7 @@ int Purge(LinkedList *list) {
                 i--;
         }
     }
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 static int merge_in_place(LinkedList *, const LinkedList *);
@@ -131,7 +131,7 @@ static inline int merge_in_place(LinkedList *a, const LinkedList *b) {
     if (a->size == 0)
         return LinkedListExtend(a, b);
     if (b->size == 0)
-        return -LLERR_OK;
+        return -RERR_OK;
     NODE *prev = NULL;
     NODE *ap = a->head;
     NODE *bp = b->head;
@@ -155,9 +155,9 @@ static inline int merge_in_place(LinkedList *a, const LinkedList *b) {
         OOM_EX(LinkedListAppend(a, bp->value));
         bp = bp->next;
     }
-    return -LLERR_OK;
+    return -RERR_OK;
 cleanup:
-    return -LLERR_OOM;
+    return -RERR_OOM;
 }
 
 __attribute__((always_inline))
@@ -180,10 +180,10 @@ static inline int merge_clone(const LinkedList *a, const LinkedList *b, LinkedLi
         OOM_EX(LinkedListAppend(c, bp->value));
         bp = bp->next;
     }
-    return -LLERR_OK;
+    return -RERR_OK;
 cleanup:
     LinkedListClear(c);
-    return -LLERR_OOM;
+    return -RERR_OOM;
 }
 
 #undef OOM_EX

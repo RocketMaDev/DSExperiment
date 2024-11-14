@@ -29,11 +29,11 @@ void LinkedListRelease(LinkedList *list) {
 
 int LinkedListAppend(LinkedList *list, NODE_TYPE v) {
     if (__builtin_expect(list->size >= MAX_SIZE, 0))
-        return -LLERR_OVERFLOW;
+        return -RERR_OVERFLOW;
     NODE *node = malloc(sizeof(NODE));
 #define IFOOM(node) \
     if (__builtin_expect(!node, 0))  \
-        return -LLERR_OOM
+        return -RERR_OOM
     IFOOM(node);
     if (!list->head) {
         list->head = list->tail = node;
@@ -46,12 +46,12 @@ int LinkedListAppend(LinkedList *list, NODE_TYPE v) {
         node->value = v;
     }
     list->size++;
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 int LinkedListInsert(LinkedList *list, unsigned int index, NODE_TYPE v) {
     if (index > list->size)
-        return -LLERR_OVERFLOW;
+        return -RERR_OVERFLOW;
     if (index == list->size)
         return LinkedListAppend(list, v);
     if (index == 0)
@@ -67,12 +67,12 @@ int LinkedListInsert(LinkedList *list, unsigned int index, NODE_TYPE v) {
     node->next = np;
     node->value = v;
     prev->next = node;
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 int LinkedListPrepend(LinkedList *list, NODE_TYPE v) {
     if (__builtin_expect(list->size >= MAX_SIZE, 0))
-        return -LLERR_OVERFLOW;
+        return -RERR_OVERFLOW;
     NODE *node = malloc(sizeof(NODE));
     IFOOM(node);
     if (!list->head) {
@@ -85,12 +85,12 @@ int LinkedListPrepend(LinkedList *list, NODE_TYPE v) {
         node->value = v;
     }
     list->size++;
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 int LinkedListDelete(LinkedList *list, unsigned int index, NODE_TYPE *recv) {
     if (__builtin_expect(list->size >= MAX_SIZE, 0))
-        return -LLERR_OVERFLOW;
+        return -RERR_OVERFLOW;
     NODE_TYPE discard;
     if (!recv)
         recv = &discard;
@@ -106,7 +106,7 @@ int LinkedListDelete(LinkedList *list, unsigned int index, NODE_TYPE *recv) {
             list->head = next;
         }
         list->size--;
-        return -LLERR_OK;
+        return -RERR_OK;
     }
     NODE *node = list->head;
     for (unsigned int i = 0; i < index - 1; i++)
@@ -122,21 +122,21 @@ int LinkedListDelete(LinkedList *list, unsigned int index, NODE_TYPE *recv) {
         node->next = next;
     }
     list->size--;
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 int LinkedListSet(LinkedList *list, unsigned int index, NODE_TYPE v) {
     if (index >= list->size)
-        return -LLERR_OVERFLOW;
+        return -RERR_OVERFLOW;
     if (index == list->size - 1) {
         list->tail->value = v;
-        return -LLERR_OK;
+        return -RERR_OK;
     }
     NODE *node = list->head;
     for (unsigned int i = 0; i < index; i++)
         node = node->next;
     node->value = v;
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 int LinkedListGet(const LinkedList *list, unsigned int index, NODE_TYPE *recv) {
@@ -144,16 +144,16 @@ int LinkedListGet(const LinkedList *list, unsigned int index, NODE_TYPE *recv) {
     if (!recv)
         recv = &discard;
     if (index >= list->size)
-        return -LLERR_OVERFLOW;
+        return -RERR_OVERFLOW;
     if (index == list->size - 1) {
         *recv = list->tail->value;
-        return -LLERR_OK;
+        return -RERR_OK;
     }
     NODE *node = list->head;
     for (unsigned int i = 0; i < index; i++)
         node = node->next;
     *recv = node->value;
-    return -LLERR_OK;
+    return -RERR_OK;
 }
 
 unsigned int LinkedListSize(const LinkedList *list) {
@@ -162,7 +162,7 @@ unsigned int LinkedListSize(const LinkedList *list) {
 
 int LinkedListFind(const LinkedList *list, NODE_TYPE v) {
     if (!list->head)
-        return -LLERR_NOTFOUND;
+        return -RERR_NOTFOUND;
     NODE *node = list->head;
     unsigned int idx = 0;
     do {
@@ -175,7 +175,7 @@ int LinkedListFind(const LinkedList *list, NODE_TYPE v) {
         idx++;
         node = node->next;
     } while (node);
-    return -LLERR_NOTFOUND;
+    return -RERR_NOTFOUND;
 }
 
 int LinkedListRemove(LinkedList *list, NODE_TYPE v) {
@@ -183,7 +183,7 @@ int LinkedListRemove(LinkedList *list, NODE_TYPE v) {
     NODE *node, *tofree;
     unsigned int count;
     if ((idx = LinkedListFind(list, v)) < 0)
-        return -LLERR_NOTFOUND;
+        return -RERR_NOTFOUND;
     count = 0;
     while (idx >= 0) {
         if (idx == 0) {
@@ -231,12 +231,12 @@ static void cp_vals(unsigned int index, NODE_TYPE v) {
 
 int LinkedListExtend(LinkedList *dst, const LinkedList *src) {
     if (!src->size)
-        return -LLERR_OK;
+        return -RERR_OK;
     LinkedList buf;
     LinkedListInit(&buf);
     valsToCopy = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * src->size);
     if (!valsToCopy)
-        return -LLERR_OOM;
+        return -RERR_OOM;
     LinkedListTraverse((LinkedList *)src, cp_vals);
     for (unsigned int i = 0; i < src->size; i++)
         if (__builtin_expect(LinkedListAppend(&buf, valsToCopy[i]) < 0, 0))
@@ -245,14 +245,14 @@ int LinkedListExtend(LinkedList *dst, const LinkedList *src) {
         dst->head = buf.head;
         dst->tail = buf.tail;
         dst->size = buf.size;
-        return -LLERR_OK;
+        return -RERR_OK;
     }
     dst->tail->next = buf.head;
     dst->size += buf.size;
     dst->tail = buf.tail;
-    return -LLERR_OK;
+    return -RERR_OK;
 cleanup:
     LinkedListClear(&buf);
-    return -LLERR_OOM;
+    return -RERR_OOM;
 }
 #undef IFOOM

@@ -5,6 +5,7 @@
 #endif
 #define NODE_TYPE unsigned char
 #include "arraylist.h"
+#include "rerror.h"
 typedef ArrayList String;
 
 #define __init_here

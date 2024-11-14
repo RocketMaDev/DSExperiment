@@ -16,13 +16,13 @@ int Conversion(unsigned int dec, unsigned int tobase, ArrayList *stack) {
             dec >>= 3;
         }
     else 
-        return -ALERR_NOTIMPLEMENTED;
-    return -ALERR_OK;
+        return -RERR_NOTIMPLEMENTED;
+    return -RERR_OK;
 }
 
 int QueueReverse(Queue *queue) {
     if (QueueEmpty(queue))
-        return -ALERR_OK;
+        return -RERR_OK;
     ArrayList buf;
     int err;
     IFERR(ArrayListInit(&buf, QueueLength(queue)));
@@ -36,6 +36,6 @@ int QueueReverse(Queue *queue) {
         StackPop(&buf, &recv);
         Enqueue(queue, recv); // not possible to overflow
     }
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 #undef IFERR

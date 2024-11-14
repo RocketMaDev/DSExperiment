@@ -1,6 +1,6 @@
 #ifndef __LINKED_LIST_H__
 #define __LINKED_LIST_H__
-
+#include "rerror.h"
 #ifndef NODE_TYPE
 #   define NODE_TYPE int
 #endif
@@ -15,13 +15,6 @@
 typedef int (*NODE_HOOK)(NODE_TYPE a, NODE_TYPE b);
 extern NODE_HOOK NodeCmp;
 #   endif
-
-enum {
-    LLERR_OK = 0,
-    LLERR_OOM = 1,
-    LLERR_OVERFLOW = 2,
-    LLERR_NOTFOUND = 3,
-};
 
 typedef struct __node {
     NODE_TYPE value;

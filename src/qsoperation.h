@@ -4,6 +4,7 @@
 #   undef NODE_TYPE
 #endif
 #define NODE_TYPE int
+#include "rerror.h"
 #include "arraylist.h"
 #include "stack.h"
 #include "queue.h"

@@ -12,46 +12,46 @@ int Union(ArrayList *a, const ArrayList *b, Nullable ArrayList *ans) {
     if (!b->size) {
         if (ans)
             return ArrayListExtend(ans, b);
-        return -ALERR_OK;
+        return -RERR_OK;
     }
     int err;
     ArrayList *target = ans ? ans : a;
     if (ans)
         IFERR(ArrayListExtend(ans, a));
     for (unsigned int i = 0; i < b->size; i++)
-        if (ArrayListFind(target, b->arr[i]) == -ALERR_NOTFOUND)
+        if (ArrayListFind(target, b->arr[i]) == -RERR_NOTFOUND)
             IFERR(ArrayListAppend(target, b->arr[i]));
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 
 int Intersection(ArrayList *a, const ArrayList *b, Nullable ArrayList *ans) {
     if (!a->size)
-        return -ALERR_OK;
+        return -RERR_OK;
     if (!b->size) {
         ArrayListClear(ans ? ans : a);
-        return -ALERR_OK;
+        return -RERR_OK;
     }
     ArrayList buf;
     int err;
     IFERR(ArrayListInit(&buf, a->size)); // a->size as it will not be larger than a
     for (unsigned int i = 0; i < a->size; i++)
-        if (ArrayListFind(b, a->arr[i]) != -ALERR_NOTFOUND)
+        if (ArrayListFind(b, a->arr[i]) != -RERR_NOTFOUND)
             ArrayListAppend(&buf, a->arr[i]); // ignore the result as always succeed
     ArrayList *target = ans ? ans : a;
     free(target->arr);
     target->arr = buf.arr;
     target->size = buf.size;
     target->capacity = buf.capacity;
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 
 int Difference(ArrayList *a, const ArrayList *b, Nullable ArrayList *ans) {
     if (!a->size)
-        return -ALERR_OK;
+        return -RERR_OK;
     if (!b->size) {
         if (ans)
             return ArrayListExtend(ans, a);
-        return -ALERR_OK;
+        return -RERR_OK;
     }
     int err;
     ArrayList *target = ans ? ans : a;
@@ -59,7 +59,7 @@ int Difference(ArrayList *a, const ArrayList *b, Nullable ArrayList *ans) {
         IFERR(ArrayListExtend(ans, a));
     for (unsigned int i = 0; i < b->size; i++)
         ArrayListRemove(target, b->arr[i]);
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 
 __attribute__((always_inline))
@@ -67,7 +67,7 @@ static inline int merge_in_place(ArrayList *a, const ArrayList *b) {
     if (!a->size)
         return ArrayListExtend(a, b);
     if (!b->size)
-        return -ALERR_OK;
+        return -RERR_OK;
     int err;
     unsigned int ai = 0, bi = 0;
     while (ai < a->size && bi < b->size) {
@@ -77,7 +77,7 @@ static inline int merge_in_place(ArrayList *a, const ArrayList *b) {
     }
     while (bi < b->size)
         IFERR(ArrayListAppend(a, b->arr[bi++]));
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 
 __attribute__((always_inline))
@@ -94,7 +94,7 @@ static inline int merge_clone(const ArrayList *a, const ArrayList *b, ArrayList 
         IFERR(ArrayListAppend(c, a->arr[ai++]));
     while (bi < b->size)
         IFERR(ArrayListAppend(c, b->arr[bi++]));
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 
 int MergeList(ArrayList *a, const ArrayList *b, Nullable ArrayList *res) {
@@ -109,12 +109,12 @@ int Purge(ArrayList *list) {
     int err;
     IFERR(ArrayListInit(&buf, list->size)); // could only be shorter
     for (unsigned int i = 0; i < list->size; i++)
-        if (ArrayListFind(&buf, list->arr[i]) == -ALERR_NOTFOUND)
+        if (ArrayListFind(&buf, list->arr[i]) == -RERR_NOTFOUND)
             IFERR(ArrayListAppend(&buf, list->arr[i]));
     free(list->arr);
     list->arr = buf.arr;
     list->size = buf.size;
     list->capacity = buf.capacity;
-    return -ALERR_OK;
+    return -RERR_OK;
 }
 #undef IFERR

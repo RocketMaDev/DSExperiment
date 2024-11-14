@@ -2,6 +2,7 @@
 #define __QUEUE_H__
 
 #include <stdbool.h>
+#include "rerror.h"
 #ifndef QUEUE_SIZE
 #   define QUEUE_SIZE 16
 #endif
