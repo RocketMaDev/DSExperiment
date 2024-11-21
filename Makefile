@@ -6,16 +6,16 @@ TARGET_BOOK = book
 TARGET_ARRAY = array
 TARGET_QS = qs
 TARGET_STR = str
-TARGETS = $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR)
+TARGET_TREE = tree
+TARGETS = $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR) $(TARGET_TREE)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 
-
 CC = gcc
 CFLAGS = -Isrc -Itest -Wall -Wextra
 ifdef DEBUG
-    CFLAGS += -g
+    CFLAGS += -g -DDEBUG
 else
     CFLAGS += -O2
 endif
@@ -39,6 +39,9 @@ else ifeq ($(TARGET), $(TARGET_STR))
 	DEPS = arraylist.c str.c
 	TEST = teststr.c
 	CFLAGS += -include $(TEST_DIR)/definech.h
+else ifeq ($(TARGET), $(TARGET_TREE))
+	DEPS = arraylist.c tree.c stack.c
+	TEST = testtree.c
 else
 	ERROR = err
 endif

@@ -7,5 +7,7 @@ typedef enum {
     RERR_NOTFOUND = 3,
     RERR_UNDERFLOW = 4,
     RERR_NOTIMPLEMENTED = 5,
+    RERR_EMPTY = 6,
+    RERR_CORRUPPTED = 7,
 } RERROR;
 #endif
