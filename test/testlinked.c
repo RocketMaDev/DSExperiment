@@ -2,8 +2,8 @@
 #include "../src/listoperation.h"
 #include <stdio.h>
 
-LinkedList a;
-LinkedList b;
+static LinkedList a;
+static LinkedList b;
 
 static void tst_linked_append(void) {
     puts("=====tst_linked_append=====");
@@ -104,5 +104,8 @@ int main(void) {
     tst_linked_set();
     tst_linked_merge();
     tst_linked_purge();
+    LinkedListRelease(&a);
+    LinkedListRelease(&b);
+    LinkedListRelease(&c);
     return 0;
 }

@@ -70,5 +70,9 @@ int main(void) {
     tst_replace();
     tst_index();
     tst_delete();
+    ArrayListRelease(&t1);
+    ArrayListRelease(&t2);
+    ArrayListRelease(&t3);
+    ArrayListRelease(&s);
     return 0;
 }

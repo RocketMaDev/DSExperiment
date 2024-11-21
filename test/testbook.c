@@ -61,5 +61,6 @@ int main(void) {
     tst_book_append();
     tst_book_iter();
     tst_book_select();
+    LinkedListRelease(&shelf);
     return 0;
 }

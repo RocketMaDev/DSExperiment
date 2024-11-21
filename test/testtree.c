@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-Tree plainTree;
+static Tree plainTree;
 static void tst_linear(void) {
     puts("=====tst_linear=====");
     TreeInit(&plainTree);

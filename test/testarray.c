@@ -2,8 +2,8 @@
 #include "../src/arrayoperation.h"
 #include <stdio.h>
 
-ArrayList a;
-ArrayList b;
+static ArrayList a;
+static ArrayList b;
 
 static void print_list(const char *listName, const ArrayList *list) {
     printf("ArrayList %s: [", listName);
@@ -95,5 +95,8 @@ int main(void) {
     tst_array_set();
     tst_array_merge();
     tst_array_purge();
+    ArrayListRelease(&a);
+    ArrayListRelease(&b);
+    ArrayListRelease(&c);
     return 0;
 }
