@@ -43,8 +43,10 @@ static void tst_degree_count(void) {
     puts("==========================\n");
 }
 
+#ifdef DEBUG
 static void printTree(const Tree *);
 static void printSubtree(const TreeNode *, const char *);
+#endif
 
 static void tst_bst(void) {
     puts("=====tst_bst=====");
@@ -78,6 +80,7 @@ static void tst_bst(void) {
     puts("=================\n");
 }
 
+#ifdef DEBUG
 static void printTree(const Tree* tree) {
     if (tree->root == NULL) {
         return;
@@ -122,12 +125,43 @@ static void printSubtree(const TreeNode* root, const char *prefix) {
         printSubtree(root->lnode, newPrefix);
     }
 }
+#endif
+
+static Tree threadTree;
+static void tst_thread(void) {
+    puts("=====tst_thread=====");
+    TreeInit(&threadTree);
+    int plain[] = {'A', 'B', 'C', 'D', -1, 'E', -1, -1, 'F'};
+    ArrayList plainList = {plain, sizeof(plain) / sizeof(int), sizeof(plain) / sizeof(int)};
+    int err = TreeConstruct(&threadTree, &plainList, LINEAR_WITH_THREAD);
+    printf("Constructed threadTree with status %d\n", err);
+    puts("====================\n");
+}
+
+static void print_node(const TreeNode *node, void *buf) {
+    (void)buf;
+    printf("|%d|%c|%c|%c|%d|\n", ((node->flags & LTHREAD) == LTHREAD),
+            node->lnode ? node->lnode->data : '^',
+            node->data,
+            node->rnode ? node->rnode->data : '^',
+            ((node->flags & RTHREAD) == RTHREAD));
+}
+
+static void tst_thread_traverse(void) {
+    puts("=====tst_thread_traverse=====");
+    puts("Traverse by inorder:");
+    TreeTraverse(&threadTree, IN_ORDER, NULL, print_node);
+    puts("=============================\n");
+}
 
 int main(void) {
     tst_linear();
     tst_traverse();
     tst_degree_count();
     tst_bst();
+    tst_thread();
+    tst_thread_traverse();
     TreeRelease(&plainTree);
+    TreeRelease(&threadTree);
     return 0;
 }
