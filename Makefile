@@ -7,7 +7,9 @@ TARGET_ARRAY = array
 TARGET_QS = qs
 TARGET_STR = str
 TARGET_TREE = tree
-TARGETS = $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR) $(TARGET_TREE)
+TARGET_HUFFMAN = huffman
+TARGETS := $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR)
+TARGETS += $(TARGET_TREE) $(TARGET_HUFFMAN)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -42,6 +44,9 @@ else ifeq ($(TARGET), $(TARGET_STR))
 else ifeq ($(TARGET), $(TARGET_TREE))
 	DEPS = arraylist.c tree.c stack.c
 	TEST = testtree.c
+else ifeq ($(TARGET), $(TARGET_HUFFMAN))
+	DEPS = arraylist.c tree.c stack.c huffman.c
+	TEST = testhuffman.c
 else
 	ERROR = err
 endif

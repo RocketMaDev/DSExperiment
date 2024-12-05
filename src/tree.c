@@ -109,6 +109,8 @@ int TreeDegreeCount(const Tree *tree, unsigned int degree) {
 }
 
 unsigned int TreeHeight(const Tree *tree) {
+    if (tree->flags & HUFFMAN_TREE)
+        return 0;   // not implemented
     return tree->height;
 }
 

@@ -32,6 +32,7 @@ typedef struct {
 enum TreeFlag {
     PLAIN_TREE = 0,
     THREADING_TREE = 1,
+    HUFFMAN_TREE = 2,
 };
 
 enum TraverseOrder {
