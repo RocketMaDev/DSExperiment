@@ -12,6 +12,7 @@ void HuffmanTreeInit(HuffmanTree *tree) {
     tree->codes = NULL;
     tree->weights = NULL;
     tree->tree.flags |= HUFFMAN_TREE;
+    tree->nodes = NULL;
 }
 
 void HuffmanTreeRelease(HuffmanTree *tree) {
@@ -19,6 +20,7 @@ void HuffmanTreeRelease(HuffmanTree *tree) {
         return;
     TreeRelease(&tree->tree);
     free(tree->codes);
+    free(tree->nodes);
     tree->weights = NULL;
 }
 
@@ -97,7 +99,7 @@ int HuffmanTreeConstruct(HuffmanTree *tree, const ArrayList *weights) {
     traverse_encode(tree->tree.root, clist, weights->size, (HuffmanCode){0, 0});
     tree->tree.height = 1; // needed to release the tree
     tree->codes = clist;
-    free(nodes);
+    tree->nodes = nodes;
     return -RERR_OK;
 
 cleanup:

@@ -12,6 +12,7 @@ typedef struct {
     Tree tree;
     const ArrayList *weights;
     HuffmanCode *codes;
+    TreeNode **nodes;
 } HuffmanTree;
 
 #define CONCAT(weight, index) (((weight) << 8) | (index))

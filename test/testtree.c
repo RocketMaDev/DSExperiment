@@ -139,18 +139,27 @@ static void tst_thread(void) {
 }
 
 static void print_node(const TreeNode *node, void *buf) {
-    (void)buf;
+#define cnt (*(size_t *)buf)
+    cnt++;
+    if (cnt & ~0xff && (cnt >> 8) == (cnt & 0xff))
+        cnt = node->data;
     printf("|%d|%c|%c|%c|%d|\n", ((node->flags & LTHREAD) == LTHREAD),
             node->lnode ? node->lnode->data : '^',
             node->data,
             node->rnode ? node->rnode->data : '^',
             ((node->flags & RTHREAD) == RTHREAD));
+#undef cnt
 }
 
 static void tst_thread_traverse(void) {
     puts("=====tst_thread_traverse=====");
+    size_t cnt = 0;
     puts("Traverse by inorder:");
-    TreeTraverse(&threadTree, IN_ORDER, NULL, print_node);
+    TreeTraverse(&threadTree, IN_ORDER, &cnt, print_node);
+    cnt <<= 8;
+    puts("Traverse by thread:");
+    TreeTraverse(&threadTree, IN_ORDER, &cnt, print_node);
+    printf("|0|%c|^|%c|1|\n", threadTree.root->data, (int)cnt);
     puts("=============================\n");
 }
 
