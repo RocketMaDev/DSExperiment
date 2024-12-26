@@ -8,8 +8,10 @@ TARGET_QS = qs
 TARGET_STR = str
 TARGET_TREE = tree
 TARGET_HUFFMAN = huffman
+TARGET_MATRIX = MatrixGraph
+TARGET_LINKER = LinkedGraph
 TARGETS := $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR)
-TARGETS += $(TARGET_TREE) $(TARGET_HUFFMAN)
+TARGETS += $(TARGET_TREE) $(TARGET_HUFFMAN) $(TARGET_MATRIX) $(TARGET_LINKER)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -47,6 +49,14 @@ else ifeq ($(TARGET), $(TARGET_TREE))
 else ifeq ($(TARGET), $(TARGET_HUFFMAN))
 	DEPS = arraylist.c tree.c stack.c huffman.c
 	TEST = testhuffman.c
+else ifeq ($(TARGET), $(TARGET_MATRIX))
+	DEPS = arraylist.c matrixgraph.c
+	TEST = testmatrix.c
+	CFLAGS += -include $(TEST_DIR)/definelong.h
+else ifeq ($(TARGET), $(TARGET_LINKER))
+	DEPS = arraylist.c linkedgraph.c
+	TEST = testlinker.c
+	CFLAGS += -include $(TEST_DIR)/definelong.h
 else
 	ERROR = err
 endif
