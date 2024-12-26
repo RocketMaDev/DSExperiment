@@ -40,7 +40,7 @@ unsigned int ArrayListSize(const ArrayList *list);
 int ArrayListFind(const ArrayList *list, NODE_TYPE v);
 int ArrayListRemove(ArrayList *list, NODE_TYPE v);
 
-void ArrayListTraverse(ArrayList *list, void (*func)(unsigned int index, NODE_TYPE v));
+void ArrayListTraverse(ArrayList *list, void *buf, void (*func)(unsigned int index, NODE_TYPE v, void *buf));
 int ArrayListExtend(ArrayList *dst, const ArrayList *src);
 #endif
 

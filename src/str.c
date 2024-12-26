@@ -67,8 +67,8 @@ int StrSubstr(String *sub, const String *s, unsigned int pos, unsigned int len) 
     return -RERR_OK;
 }
 
-void StrTraverse(String *s, void (*func)(unsigned int index, NODE_TYPE ch)) {
-    ArrayListTraverse(s, func);
+void StrTraverse(String *s, void *buf, void (*func)(unsigned int index, NODE_TYPE ch, void *buf)) {
+    ArrayListTraverse(s, buf, func);
 }
 
 int StrIndex(const String *s, const String *substr, unsigned int pos) {

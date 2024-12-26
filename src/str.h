@@ -16,7 +16,7 @@ int StrCompare(const String *a, const String *b);
 unsigned int StrLength(String *s);
 int StrConcat(String *dst, const String *src);
 int StrSubstr(__init_here String *sub, const String *s, unsigned int pos, unsigned int len);
-void StrTraverse(String *s, void (*func)(unsigned int index, NODE_TYPE ch));
+void StrTraverse(String *s, void *buf, void (*func)(unsigned int index, NODE_TYPE ch, void *buf));
 int StrClone(__init_here String *dst, const String *src);
 
 int StrIndex(const String *s, const String *substr, unsigned int pos);

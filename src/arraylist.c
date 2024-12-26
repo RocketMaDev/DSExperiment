@@ -132,9 +132,9 @@ int ArrayListRemove(ArrayList *list, NODE_TYPE v) {
     return count ? count : -RERR_NOTFOUND;
 }
 
-void ArrayListTraverse(ArrayList *list, void (*func)(unsigned int index, NODE_TYPE v)) {
+void ArrayListTraverse(ArrayList *list, void *buf, void (*func)(unsigned int index, NODE_TYPE v, void *buf)) {
     for (unsigned int i = 0; i < list->size; i++)
-        func(i, list->arr[i]);
+        func(i, list->arr[i], buf);
 }
 
 int ArrayListExtend(ArrayList *dst, const ArrayList *src) {

@@ -14,14 +14,15 @@ static void tst_assign(void) {
     puts("====================\n");
 }
 
-static void put(unsigned int i, unsigned char v) {
+static void put(unsigned int i, unsigned char v, void *buf) {
+    (void)i, (void)buf;
     putchar(v);
 }
 
 static void tst_traverse(void) {
     puts("=====tst_traverse=====");
     printf("Traversing t1 with putchar: ");
-    StrTraverse(&t1, put);
+    StrTraverse(&t1, NULL, put);
     puts("");
     puts("======================\n");
 }
