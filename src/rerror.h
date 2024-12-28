@@ -9,5 +9,13 @@ typedef enum {
     RERR_NOTIMPLEMENTED = 5,
     RERR_EMPTY = 6,
     RERR_CORRUPPTED = 7,
+    RERR_EXISTED = 8,
 } RERROR;
+
+#define OUT_OF_ENUM(msg) \
+    do { \
+        fprintf(stderr, msg \
+                " @%s#L%d, exit\n", __FILE__, __LINE__); \
+        exit(1); \
+    } while (0)
 #endif
