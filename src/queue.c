@@ -14,19 +14,19 @@ unsigned int QueueLength(const Queue *queue) {
 
 int Enqueue(Queue *queue, NODE_TYPE v) {
     if (QueueLength(queue) == QUEUE_SIZE - 1)
-        return -QERR_OVERFLOW;
+        return -RERR_OVERFLOW;
     queue->arr[queue->rear] = v;
     queue->rear = (queue->rear + 1) % QUEUE_SIZE;
-    return -QERR_OK;
+    return -RERR_OK;
 }
 
 int Dequeue(Queue *queue, Nullable NODE_TYPE *recv) {
     if (QueueEmpty(queue))
-        return -QERR_UNDERFLOW;
+        return -RERR_UNDERFLOW;
     if (recv)
         *recv = queue->arr[queue->front];
     queue->front = (queue->front + 1) % QUEUE_SIZE;
-    return -QERR_OK;
+    return -RERR_OK;
 }
 
 bool QueueEmpty(const Queue *queue) {

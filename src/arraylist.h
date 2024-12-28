@@ -10,7 +10,7 @@
 #   define MAX_SIZE 1000
 #endif
 
-#define Nullable 
+#define Nullable
 
 #   ifdef OVERRIDE_CMP
 typedef int (*NODE_HOOK)(NODE_TYPE a, NODE_TYPE b);

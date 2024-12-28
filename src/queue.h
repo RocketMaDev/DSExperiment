@@ -17,12 +17,6 @@ typedef struct {
     unsigned int rear;
 } Queue;
 
-enum {
-    QERR_OK = 0,
-    QERR_OVERFLOW = 1,
-    QERR_UNDERFLOW = 2,
-};
-
 #ifndef Nullable
 #   define Nullable
 #endif
