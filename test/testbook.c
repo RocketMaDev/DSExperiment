@@ -1,11 +1,11 @@
+#ifndef OVERRIDE_CMP
+#define OVERRIDE_CMP
+#endif
+
 #include "testbook.h"
 #include "../src/linkedlist.h"
 #include <stdio.h>
 #include <string.h>
-
-#ifndef OVERRIDE_CMP
-#define OVERRIDE_CMP
-#endif
 
 static int cmp(NODE_TYPE a, NODE_TYPE b) {
     int val = strcmp(a.bookid, b.bookid);

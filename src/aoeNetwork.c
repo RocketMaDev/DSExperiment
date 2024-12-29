@@ -6,6 +6,7 @@
 #include "rerror.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #define IFERR(stat) \
     do { \
@@ -81,6 +82,7 @@ int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
         err = -RERR_OOM;
         goto cleanup;
     }
+    memset(earliest, 0, sizeof(unsigned) * nvex);
 
     for (unsigned i = 0; i < nvex; i++) {
         unsigned vex = topovex[i];
