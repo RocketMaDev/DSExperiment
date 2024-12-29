@@ -10,8 +10,11 @@ TARGET_TREE = tree
 TARGET_HUFFMAN = huffman
 TARGET_MATRIX = MatrixGraph
 TARGET_LINKER = LinkedGraph
+TARGET_SEARCH = search
+TARGET_MST = mst
 TARGETS := $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR)
 TARGETS += $(TARGET_TREE) $(TARGET_HUFFMAN) $(TARGET_MATRIX) $(TARGET_LINKER)
+TARGETS += $(TARGET_SEARCH) $(TARGET_MST)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -56,6 +59,14 @@ else ifeq ($(TARGET), $(TARGET_MATRIX))
 else ifeq ($(TARGET), $(TARGET_LINKER))
 	DEPS = arraylist.c linkedgraph.c
 	TEST = testlinker.c
+	CFLAGS += -include $(TEST_DIR)/definelong.h
+else ifeq ($(TARGET), $(TARGET_SEARCH))
+	DEPS = arraylist.c linkedgraph.c matrixgraph.c graphops.c queue.c
+	TEST = testtraverse.c
+	CFLAGS += -include $(TEST_DIR)/definelong.h
+else ifeq ($(TARGET), $(TARGET_MST))
+	DEPS = arraylist.c linkedgraph.c matrixgraph.c graphops.c queue.c
+	TEST = testmst.c
 	CFLAGS += -include $(TEST_DIR)/definelong.h
 else
 	ERROR = err
