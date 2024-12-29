@@ -106,6 +106,7 @@ int StrInsert(String *s, unsigned int index, const String *substr) {
     IFERR(ArrayListExtend(s, &remaining));
     IFERR(ArrayListAppend(s, '\0'));
     ArrayListDelete(s, s->size - 1, NULL);
+    ArrayListRelease(&remaining);
     return -RERR_OK;
 }
 

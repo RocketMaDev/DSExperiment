@@ -29,7 +29,7 @@ typedef struct {
     GraphType type;
 } MatrixGraph;
 
-void MatrixGraphInit(MatrixGraph *graph, unsigned narc);
+void MatrixGraphInit(MatrixGraph *graph, unsigned nvex);
 void MatrixGraphRelease(MatrixGraph *graph);
 
 int MatrixGraphConstruct(MatrixGraph *graph, GraphType type, ArrayList *vexs, unsigned narc, ArcDesc *arcs);

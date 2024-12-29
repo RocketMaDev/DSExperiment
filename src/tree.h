@@ -3,6 +3,7 @@
 #ifndef NODE_TYPE
 #   define NODE_TYPE int
 #endif
+#include "arraylist.h"
 #include <stdbool.h>
 #ifdef VALIDATE_OVERRIDE
 extern bool validate(NODE_TYPE *v);
@@ -33,6 +34,7 @@ enum TreeFlag {
     PLAIN_TREE = 0,
     THREADING_TREE = 1,
     HUFFMAN_TREE = 2,
+    BINSEC_TREE = 4,
 };
 
 enum TraverseOrder {
@@ -55,9 +57,13 @@ void TreeClear(Tree *);
 void TreeRelease(Tree *);
 TreeNode *TreeNewNode(Tree *tree, NODE_TYPE v);
 void TreeFreeNode(TreeNode *);
+/* buf is ArrayList * */
 int TreeConstruct(Tree *tree, const void *buf, enum ConstructorMethod);
 void TreeTraverse(const Tree *tree, enum TraverseOrder order, void *buf, void (*func)(const TreeNode *, void *buf));
 int TreeDegreeCount(const Tree *tree, unsigned int degree);
 unsigned int TreeHeight(const Tree *tree);
 
+int BSTInsert(Tree *tree, NODE_TYPE v);
+int BSTDelete(Tree *tree, NODE_TYPE v);
+int BSTFind(Tree *tree, NODE_TYPE v, Nullable unsigned *cmpTimes);
 #endif

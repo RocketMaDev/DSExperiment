@@ -245,13 +245,16 @@ int LinkedListExtend(LinkedList *dst, const LinkedList *src) {
         dst->head = buf.head;
         dst->tail = buf.tail;
         dst->size = buf.size;
+        free(valsToCopy);
         return -RERR_OK;
     }
     dst->tail->next = buf.head;
     dst->size += buf.size;
     dst->tail = buf.tail;
+    free(valsToCopy);
     return -RERR_OK;
 cleanup:
+    free(valsToCopy);
     LinkedListClear(&buf);
     return -RERR_OOM;
 }

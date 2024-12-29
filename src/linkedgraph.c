@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-void LinkedGraphInit(LinkedGraph *graph, unsigned narc) {
+void LinkedGraphInit(LinkedGraph *graph, unsigned nvex) {
     graph->linkTable = NULL;
     graph->type = 0;
-    ArrayListInit(&graph->vexs, narc);
+    ArrayListInit(&graph->vexs, nvex);
 }
 
 void LinkedGraphRelease(LinkedGraph *graph) {
@@ -19,7 +19,7 @@ void LinkedGraphRelease(LinkedGraph *graph) {
         free(graph->linkTable);
     }
     graph->linkTable = NULL;
-    ArrayListClear(&graph->vexs);
+    ArrayListRelease(&graph->vexs);
 }
 
 #define IFOOM(stat) \

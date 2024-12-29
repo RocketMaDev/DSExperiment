@@ -15,7 +15,7 @@ typedef struct {
 #define LINK_WEIGHT(pack) ((pack) & 0xffffffff)
 #define LINK_TO(pack) ((pack) >> 32)
 
-void LinkedGraphInit(LinkedGraph *graph, unsigned narc);
+void LinkedGraphInit(LinkedGraph *graph, unsigned nvex);
 void LinkedGraphRelease(LinkedGraph *graph);
 
 int LinkedGraphConstruct(LinkedGraph *graph, GraphType type, ArrayList *vexs, unsigned narc, ArcDesc *arcs);

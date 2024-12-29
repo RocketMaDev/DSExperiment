@@ -36,6 +36,7 @@ int QueueReverse(Queue *queue) {
         StackPop(&buf, &recv);
         Enqueue(queue, recv); // not possible to overflow
     }
+    ArrayListRelease(&buf);
     return -RERR_OK;
 }
 #undef IFERR

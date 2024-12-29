@@ -69,9 +69,7 @@ void TreeTraverse(const Tree *tree, enum TraverseOrder order, void *buf, fp func
                 node = node->rnode;
             }
         } else {
-            fprintf(stderr, "PRE_ORDER & POST_ORDER not implemented for threading_tree"
-                    " @%s#L%d, exit\n", __FILE__, __LINE__);
-            exit(1);
+            OUT_OF_ENUM("PRE_ORDER & POST_ORDER not implemented for threading_tree");
         }
     } else if (order == PRE_ORDER)
         pre_traverse(tree->root, func, buf);
@@ -79,10 +77,8 @@ void TreeTraverse(const Tree *tree, enum TraverseOrder order, void *buf, fp func
         in_traverse(tree->root, func, buf);
     else if (order == POST_ORDER)
         post_traverse(tree->root, func, buf);
-    else {
-        fprintf(stderr, "Unknown order @%s#L%d, exit\n", __FILE__, __LINE__);
-        exit(1);
-    }
+    else
+        OUT_OF_ENUM("Unknown order");
 }
 
 struct __counter {
@@ -185,6 +181,7 @@ static inline int constructBYplain(Tree *tree, const ArrayList *list) {
             ptn->lnode = node;
         assert(stack.size == 0);
     }
+    ArrayListRelease(&stack);
     return -RERR_OK;
 cleanup:
     ArrayListRelease(&stack);
@@ -252,6 +249,7 @@ static inline int constructBYbs(Tree *tree, const ArrayList *list) {
                 tree->height = layer;
         }
     }
+    tree->flags |= BINSEC_TREE;
     return -RERR_OK;
 cleanup:
     TreeClear(tree);
@@ -299,14 +297,13 @@ void TreeClear(Tree *tree) {
     if (tree->flags & THREADING_TREE) {
         struct __node_list nodes;
         nodes.list = malloc(sizeof(TreeNode *) * tree->nodes);
-        if (!nodes.list) {
-            fprintf(stderr, "No memory to free tree... @%s#L%d exit\n", __FILE__, __LINE__);
-            exit(1);
-        }
+        if (!nodes.list)
+            OUT_OF_ENUM("No memory to free tree...");
         nodes.idx = 0;
         TreeTraverse(tree, IN_ORDER, &nodes, thread_tree_free);
         for (unsigned int i = 0; i < tree->nodes; i++)
             free(nodes.list[i]);
+        free(nodes.list);
     } else
         // after free, we lose pointer of child, so we need to free last
         post_traverse(tree->root, tree_free, NULL);

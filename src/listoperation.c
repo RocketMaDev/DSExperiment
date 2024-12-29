@@ -18,6 +18,7 @@ int Union(LinkedList *a, const LinkedList *b, LinkedList *ans) {
             return LinkedListExtend(ans, a);
         return -RERR_OK;
     }
+    free(gbuf1);
     gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     if (!gbuf1)
         return -RERR_OOM;
@@ -38,6 +39,7 @@ int Intersection(LinkedList *a, const LinkedList *b, LinkedList *ans) {
         LinkedListClear(ans ? ans : a);
         return -RERR_OK;
     }
+    free(gbuf1);
     gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     if (!gbuf1)
         return -RERR_OOM;
@@ -66,6 +68,7 @@ int Difference(LinkedList *a, const LinkedList *b, LinkedList *ans) {
             return LinkedListExtend(ans, a);
         return -RERR_OK;
     }
+    free(gbuf1);
     gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     if (!gbuf1)
         return -RERR_OOM;
@@ -109,6 +112,7 @@ int Purge(LinkedList *list) {
                 i--;
         }
     }
+    free(todelete);
     return -RERR_OK;
 }
 
@@ -187,3 +191,9 @@ cleanup:
 }
 
 #undef OOM_EX
+
+__attribute__((destructor))
+static void cleanup_gbuf(void) {
+    free(gbuf1);
+    free(gbuf2);
+}

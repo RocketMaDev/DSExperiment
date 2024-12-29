@@ -5,16 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-void MatrixGraphInit(MatrixGraph *graph, unsigned narc) {
+void MatrixGraphInit(MatrixGraph *graph, unsigned nvex) {
     graph->arcs = NULL;
     graph->type = 0;
-    ArrayListInit(&graph->vexs, narc);
+    ArrayListInit(&graph->vexs, nvex);
 }
 
 void MatrixGraphRelease(MatrixGraph *graph) {
     free(graph->arcs);
     graph->arcs = NULL;
-    ArrayListClear(&graph->vexs);
+    ArrayListRelease(&graph->vexs);
 }
 
 #define IFOOM(stat) \
