@@ -1,5 +1,6 @@
 #include "arrayoperation.h"
 #include "arraylist.h"
+#include "rerror.h"
 #include <stdlib.h>
 
 #define IFERR(stat) \
@@ -116,5 +117,38 @@ int Purge(ArrayList *list) {
     list->size = buf.size;
     list->capacity = buf.capacity;
     return -RERR_OK;
+}
+
+int ArrayListBinaryFind(const ArrayList *list, NODE_TYPE target, Nullable unsigned *cmpTimes) {
+    register unsigned size = list->size;
+    int li = 0, ri = size - 1, mi = size / 2;
+    NODE_TYPE *arr = list->arr;
+    unsigned cmp_times = 0;
+    while (li <= ri) {
+        cmp_times++;
+        if (target == arr[mi]) {
+            if (cmpTimes)
+                *cmpTimes = cmp_times;
+            return mi;
+        } else if (target > arr[mi])
+            li = mi + 1;
+        else
+            ri = mi - 1;
+        mi = (li + ri) / 2;
+    }
+    if (cmpTimes)
+        *cmpTimes = cmp_times;
+    return -RERR_NOTFOUND;
+}
+
+int ArrayListLinearFind(const ArrayList *list, NODE_TYPE target, Nullable unsigned *cmpTimes) {
+    int err = ArrayListFind(list, target);
+    if (cmpTimes) {
+        if (err == -RERR_NOTFOUND)
+            *cmpTimes = list->size;
+        else if (err >= 0)
+            *cmpTimes = err + 1;
+    }
+    return err;
 }
 #undef IFERR

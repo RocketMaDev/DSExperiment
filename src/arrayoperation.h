@@ -10,4 +10,7 @@ int Difference(ArrayList *a, const ArrayList *b, Nullable ArrayList *ans);
 int MergeList(ArrayList *a, const ArrayList *b, Nullable ArrayList *res);
 
 int Purge(ArrayList *list);
+
+int ArrayListLinearFind(const ArrayList *list, NODE_TYPE target, Nullable unsigned *cmpTimes);
+int ArrayListBinaryFind(const ArrayList *list, NODE_TYPE target, Nullable unsigned *cmpTimes);
 #endif

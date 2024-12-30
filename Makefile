@@ -13,9 +13,12 @@ TARGET_LINKER = LinkedGraph
 TARGET_SEARCH = search
 TARGET_MST = mst
 TARGET_CRITICAL = critical
+TARGET_STATIC = static
+TARGET_HASHTABLE = hashtable
 TARGETS := $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR)
 TARGETS += $(TARGET_TREE) $(TARGET_HUFFMAN) $(TARGET_MATRIX) $(TARGET_LINKER)
-TARGETS += $(TARGET_SEARCH) $(TARGET_MST) $(TARGET_CRITICAL)
+TARGETS += $(TARGET_SEARCH) $(TARGET_MST) $(TARGET_CRITICAL) $(TARGET_STATIC)
+TARGETS += $(TARGET_HASHTABLE)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -73,6 +76,12 @@ else ifeq ($(TARGET), $(TARGET_CRITICAL))
 	DEPS = linkedgraph.c arraylist.c stack.c aoeNetwork.c
 	TEST = testcritical.c
 	CFLAGS += -include $(TEST_DIR)/definelong.h
+else ifeq ($(TARGET), $(TARGET_STATIC))
+	DEPS = arraylist.c arrayoperation.c
+	TEST = teststatic.c
+else ifeq ($(TARGET), $(TARGET_HASHTABLE))
+	DEPS = arraylist.c linkedlist.c hashtable.c
+	TEST = testhashtable.c
 else
 	ERROR = err
 endif
