@@ -1,4 +1,4 @@
-#include "aoeNetwork.h"
+#include "aoenet.h"
 #include "linkedgraph.h"
 #include "arraylist.h"
 #include "matrixgraph.h"

@@ -1,4 +1,4 @@
-#include "../src/aoeNetwork.h"
+#include "../src/aoenet.h"
 #include <stdio.h>
 
 static LinkedGraph x;
