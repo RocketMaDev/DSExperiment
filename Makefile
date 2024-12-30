@@ -106,5 +106,30 @@ clean:
 clean_deps:
 	rm -f $(BUILD_DIR)/*.o
 
-.PHONY: all clean clean_deps err
+.PHONY: all clean clean_deps err chapter1 chapter2 chapter3 chapter4
+
+chapter1:
+	$(MAKE) clean_deps
+	$(MAKE) TARGET=array
+	$(MAKE) TARGET=linked
+	$(MAKE) TARGET=qs
+	$(MAKE) clean_deps
+	$(MAKE) TARGET=book
+	$(MAKE) clean_deps
+	$(MAKE) TARGET=str
+
+chapter2:
+	$(MAKE) clean_deps
+	$(MAKE) TARGET=tree
+	$(MAKE) TARGET=huffman
+
+chapter3:
+	$(MAKE) clean_deps
+	$(MAKE) TARGET=MatrixGraph
+	$(MAKE) TARGET=LinkedGraph
+	$(MAKE) TARGET=mst
+	$(MAKE) TARGET=search
+	$(MAKE) TARGET=critical
+
+chapter4:
 
