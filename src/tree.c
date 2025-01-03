@@ -363,6 +363,10 @@ static TreeNode *balanceTree(TreeNode *node, Tree *tree);
 int TreeAVLInsert(Tree *tree, NODE_TYPE v) {
     if (!(tree->flags & AVL_TREE))
         return -RERR_NOTIMPLEMENTED;
+    int err = TreeAVLFind(tree, v, NULL); // using cache here
+    if (err >= 0)
+        return -RERR_EXISTED;
+    assert(err == -RERR_NOTFOUND || err == -RERR_EMPTY);
     TreeNode *node = TreeNewNode(tree, v);
     if (!node)
         return -RERR_OOM;
@@ -371,10 +375,6 @@ int TreeAVLInsert(Tree *tree, NODE_TYPE v) {
         tree->height++;
         return -RERR_OK;
     }
-    int err = TreeAVLFind(tree, v, NULL); // using cache here
-    if (err >= 0)
-        return -RERR_EXISTED;
-    assert(err == -RERR_NOTFOUND); // should be the only case
     TreeNode *parent = tree->cache;
     node->parent = parent;
     if (v < parent->data)
@@ -388,12 +388,12 @@ int TreeAVLInsert(Tree *tree, NODE_TYPE v) {
         else
             parent->balance++;
         if (parent->balance == 0)
-            break;
+            break; // subtree height left unchanged, stop updating parent's bf
         if (parent->balance == 2 || parent->balance == -2) {
             balanceTree(parent, tree);
-            break;
+            break; // there is no need to update parent's bf after rebalancing
         }
-        // update to top
+        // update from buttom to top
         parent->height++;
         node = parent;
         parent = parent->parent;
@@ -402,12 +402,17 @@ int TreeAVLInsert(Tree *tree, NODE_TYPE v) {
     return -RERR_OK;
 }
 
-static TreeNode *deleteNode(TreeNode *node, TreeNode *recv) {
+static TreeNode *deleteNode(TreeNode *node, TreeNode *recv, TreeNode ***slot, TreeNode **tofree) {
     if (!node->lnode && !node->rnode) {         // case 0
+        // If parent's lnode/rnode is set to NULL, a problem may emerge when we detecting
+        // whether node is parent's lnode or rnode as parent may have children both set
+        // to NULL. In the result, we set it to a pointer on stack, so we can still trace
+        // it later. When we consume the trace info, we set parent's lnode or rnode to NULL.
         if (node == node->parent->lnode)
-            node->parent->lnode = NULL;
+            *slot = &node->parent->lnode;
         else
-            node->parent->rnode = NULL;
+            *slot = &node->parent->rnode;
+        **slot = recv;
         *recv = *node;
         return NULL;
     } else if (!node->lnode && node->rnode) {   // case 1
@@ -429,10 +434,12 @@ static TreeNode *deleteNode(TreeNode *node, TreeNode *recv) {
     TreeNode *successor = node->rnode;
     while (successor->lnode)
         successor = successor->lnode;
-    TreeNode t = *node;
-    *node = *successor;
-    *successor = t;
-    return deleteNode(node, recv); // must be case 0 or 1
+    NODE_TYPE t = node->data;
+    node->data = successor->data;
+    successor->data = t;
+    // since we swap the data, the node to free also alters.
+    *tofree = successor;
+    return deleteNode(successor, recv, slot, tofree); // must be case 0 or 1
 }
 
 int TreeAVLDelete(Tree *tree, NODE_TYPE v) {
@@ -443,63 +450,64 @@ int TreeAVLDelete(Tree *tree, NODE_TYPE v) {
         return -RERR_NOTFOUND;
     assert(err >= 0);
     TreeNode *node = tree->cache; // what we are seeking
-    if (node == tree->root) {
+    if (node == tree->root && (!node->lnode || !node->rnode)) {
         if (!node->lnode && !node->rnode) {
             tree->height = 0;
             tree->root = NULL;
         } else if (!node->lnode && node->rnode) {
             tree->root = node->rnode;
-            tree->height = node->rnode->height;
+            tree->height = node->rnode->height + 1;
             node->rnode->parent = NULL;
         } else if (node->lnode && !node->rnode) {
             tree->root = node->lnode;
-            tree->height = node->lnode->height;
+            tree->height = node->lnode->height + 1;
             node->lnode->parent = NULL;
-        } else
-            goto normalCase; // root with 2 children needs more operation
+        }
         free(node);
         tree->nodes--;
         return -RERR_OK;
+        // if node has children, the real node we delete won't be root itself,
+        // so we don't need to consider about these things here
     }
-normalCase:;
-    TreeNode temp;
-    TreeNode *change = deleteNode(node, &temp);
-    if (node == tree->root) {
-        TreeNode *root = node;
-        while (root->parent)
-            root = root->parent;
-        tree->root = root;
-    }
+    TreeNode temp, **slot = NULL; // see notes in deleteNode
+    TreeNode *change = deleteNode(node, &temp, &slot, &node);
     if (!change)
         change = &temp;
     free(node);
     tree->nodes--;
     TreeNode *parent = change->parent;
+    node = change;
 
     while (parent) {
         if (parent->rnode == node)
             parent->balance++;
         else
             parent->balance--;
+        if (slot) { // if a leaf is deleted, it must be processed immediately
+            *slot = NULL; // as slot is used to know if node is lchild or rchild
+            slot = NULL;  // now this information is useless
+        }
         if (parent->balance == 1 || parent->balance == -1)
-            break;
-        // update to top
+            break; // the subtree's height left unchanged
         if (parent->balance == 0)
             parent->height--;
+        // update from buttom to top
+        // when deleting a node, we may still need to update parent's bf
         if (parent->balance == 2 || parent->balance == -2)
-            node = balanceTree(parent, tree);
+            node = balanceTree(parent, tree); // new subtree's root
         else
             node = parent;
         if (!node)
             break; // in case after balanceTree, no need to update bf
         parent = node->parent;
     }
-    tree->height = tree->root->height;
+    tree->height = tree->root->height + 1;
     return -RERR_OK;
 }
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define HEIGHT(node) ((node) ? (node)->height : -1)
+/* returns new root of subtree */
 static TreeNode *rotateLeft(TreeNode *node) {
     TreeNode *rnode = node->rnode;
     if (rnode->lnode)
@@ -516,6 +524,7 @@ static TreeNode *rotateLeft(TreeNode *node) {
     return rnode;
 }
 
+/* returns new root of subtree */
 static TreeNode *rotateRight(TreeNode *node) {
     TreeNode *lnode = node->lnode;
     if (lnode->rnode)
@@ -533,8 +542,9 @@ static TreeNode *rotateRight(TreeNode *node) {
 }
 
 static TreeNode *balanceTree(TreeNode *node, Tree *tree) {
-    int oldBalance = node->balance, newBalance;
+    int oldHeight = node->height;
     TreeNode **slot, *child;
+    // to update parent's child
     if (!node->parent) // root
         slot = &tree->root;
     else if (node->parent->lnode == node)
@@ -544,35 +554,33 @@ static TreeNode *balanceTree(TreeNode *node, Tree *tree) {
 
     if (node->balance == 2) {
         child = node->lnode;
-        if (child->balance == 1) {
+        if (child->balance == 1) {          // LL
             node = rotateRight(node);
             *slot = node;
-        } else if (child->balance == -1) {
+        } else if (child->balance == -1) {  // LR
             child = rotateLeft(child);
             node->lnode = child;
             node = rotateRight(node);
             *slot = node;
         } else
             OUT_OF_ENUM("Not LL or LR");
-        newBalance = node->balance;
     } else if (node->balance == -2) {
         child = node->rnode;
-        if (child->balance == -1) {
+        if (child->balance == -1) {         // RR
             node = rotateLeft(node);
             *slot = node;
-        } else if (child->balance == 1) {
+        } else if (child->balance == 1) {   // RL
             child = rotateRight(child);
             node->rnode = child;
             node = rotateLeft(node);
             *slot = node;
         } else
             OUT_OF_ENUM("Not RR or RL");
-        newBalance = node->balance;
     } else {
         OUT_OF_ENUM("|balance| is not 2");
     }
-    if (oldBalance != newBalance)
+    if (oldHeight != node->height)
         return node;
-    else
+    else // if height left unchanged, no need to update parent's bf
         return NULL;
 }

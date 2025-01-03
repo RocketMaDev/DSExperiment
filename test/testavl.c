@@ -33,7 +33,8 @@ static void tst_find_avl(void) {
         printf("Found %d @ %d(BFS order) with %d times of comparison\n", keys[i], err, cur);
         sum += cur;
     }
-    printf("Successful AVL: %.2lf\n", sum / (double)ninfo);
+    int size = ninfo;
+    printf("Successful AVL: %.2lf\n", sum / (double)size);
     int fail[] = {4, 57, 20, 81, 6, 22, 65, 90, 14, 39, 76, 93};
     sum = 0;
     for (unsigned i = 0; i <= ninfo; i++) {
@@ -42,15 +43,17 @@ static void tst_find_avl(void) {
         printf("%d not found with %d times of comparison\n", fail[i], cur);
         sum += cur;
     }
-    printf("Failed AVL: %.2lf\n", sum / ((double)ninfo + 1));
+    printf("Failed AVL: %.2lf\n", sum / ((double)size + 1));
     puts("======================\n");
 }
 
 static void tst_insert_avl(void) {
     puts("=====tst_insert_avl=====");
-    int values[4] = {82, 60, 19, 39};
-    for (unsigned i = 0; i < 4; i++) {
+    int values[] = {82, 60, 19, 39, 58, 62, 57, 25};
+    register unsigned size = sizeof(values) / sizeof(int);
+    for (unsigned i = 0; i < size; i++) {
         int err = TreeAVLInsert(tree, values[i]);
+        assert(err == -RERR_OK || err == -RERR_EXISTED);
         if (err == 0)
             printf("Insert %d successfully\n", values[i]);
         else
@@ -62,8 +65,9 @@ static void tst_insert_avl(void) {
 
 static void tst_remove_avl(void) {
     puts("=====tst_remove_avl=====");
-    int values[4] = {75, 5, 7, 39};
-    for (unsigned i = 0; i < 4; i++) {
+    int values[] = {64, 5, 7, 13, 56};
+    register unsigned size = sizeof(values) / sizeof(int);
+    for (unsigned i = 0; i < size; i++) {
         int err = TreeAVLDelete(tree, values[i]);
         if (err == 0)
             printf("Remove %d successfully\n", values[i]);
@@ -73,6 +77,7 @@ static void tst_remove_avl(void) {
     ptree("AVL tree after 4 removals: ");
     puts("========================\n");
 }
+
 int main(void) {
     tst_create_avl();
     tst_find_avl();
