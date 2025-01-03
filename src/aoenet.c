@@ -68,6 +68,14 @@ cleanup:
     return err;
 }
 
+struct __trans {
+    unsigned from;
+    unsigned *vl;
+    unsigned *ve;
+    unsigned *l;
+    unsigned *e;
+};
+static void trans(unsigned, long, void *);
 int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
     if (graph->linkTable == NULL || topo->size == 0)
         return -RERR_EMPTY;
@@ -75,10 +83,15 @@ int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
         return -RERR_NOTIMPLEMENTED;
     register unsigned nvex = graph->vexs.size;
     register long *topovex = topo->arr;
+    unsigned narc = 0;
+    for (unsigned i = 0; i < nvex; i++)
+        narc += ArrayListSize(graph->linkTable + i);
     int err;
     unsigned *earliest = malloc(sizeof(unsigned) * nvex);
     unsigned *latest = malloc(sizeof(unsigned) * nvex);
-    if (earliest == NULL || latest == NULL) {
+    unsigned *earlyact = malloc(sizeof(unsigned) * narc);
+    unsigned *lateact = malloc(sizeof(unsigned) * narc);
+    if (!earliest || !latest || !earlyact || !lateact) {
         err = -RERR_OOM;
         goto cleanup;
     }
@@ -88,15 +101,15 @@ int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
         unsigned vex = topovex[i];
         register ArrayList *links = graph->linkTable + vex;
         for (unsigned j = 0; j < links->size; j++)
-            if (earliest[LINK_TO(links->arr[j])] < earliest[vex] + LINK_WEIGHT(links->arr[j]))
-                earliest[LINK_TO(links->arr[j])] = earliest[vex] + LINK_WEIGHT(links->arr[j]);
+            if (earliest[LINK_TO(links->arr[j])] < earliest[vex] + LINK_WEI(links->arr[j]))
+                earliest[LINK_TO(links->arr[j])] = earliest[vex] + LINK_WEI(links->arr[j]);
     }
-#ifdef DEBUG
+
     printf("Calculated earliest: [");
     for (unsigned i = 0; i < nvex - 1; i++)
         printf("%d, ", earliest[i]);
     printf("%d]\n", earliest[nvex - 1]);
-#endif
+
     for (unsigned i = 0; i < nvex; i++)
         latest[i] = earliest[nvex - 1];
 
@@ -104,20 +117,32 @@ int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
         unsigned vex = topovex[i];
         register ArrayList *links = graph->linkTable + vex;
         for (unsigned j = 0; j < links->size; j++)
-            if (latest[vex] > latest[LINK_TO(links->arr[j])] - LINK_WEIGHT(links->arr[j]))
-                latest[vex] = latest[LINK_TO(links->arr[j])] - LINK_WEIGHT(links->arr[j]);
+            if (latest[vex] > latest[LINK_TO(links->arr[j])] - LINK_WEI(links->arr[j]))
+                latest[vex] = latest[LINK_TO(links->arr[j])] - LINK_WEI(links->arr[j]);
     }
-#ifdef DEBUG
+
     printf("Calculated latest: [");
     for (unsigned i = 0; i < nvex - 1; i++)
         printf("%d, ", latest[i]);
     printf("%d]\n", latest[nvex - 1]);
-#endif
+
+    for (unsigned i = 0; i < nvex; i++) {
+        struct __trans t = {i, latest, earliest, lateact, earlyact};
+        ArrayListTraverse(graph->linkTable + i, &t, trans); // calculate critical activity
+    }
+    printf("e: [");
+    for (unsigned i = 0; i < narc - 1; i++)
+        printf("%d, ", earlyact[i]);
+    printf("%d]\n", earlyact[narc - 1]);
+    printf("l: [");
+    for (unsigned i = 0; i < narc - 1; i++)
+        printf("%d, ", lateact[i]);
+    printf("%d]\n", lateact[narc - 1]);
 
     for (unsigned i = 0; i < nvex; i++) {
         register ArrayList *links = graph->linkTable + i;
         for (unsigned ji = 0; ji < links->size; ji++)
-            if (earliest[i] == latest[LINK_TO(links->arr[ji])] - LINK_WEIGHT(links->arr[ji])) {
+            if (earliest[i] == latest[LINK_TO(links->arr[ji])] - LINK_WEI(links->arr[ji])) {
                 unsigned j = LINK_TO(links->arr[ji]);
                 unsigned v1idx = ArrayListFind(topo, i);
                 unsigned v2idx = ArrayListFind(topo, j);
@@ -129,8 +154,24 @@ int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
                 printf("%s -> %s\n", (char *)(graph->vexs.arr + i), (char *)(graph->vexs.arr + j));
             }
     }
+    printf("Critical activities: [");
+    for (unsigned i = 0; i < narc; i++)
+        if (earlyact[i] == lateact[i])
+            printf("a%d, ", i);
+    printf("\b\b]\n");
 cleanup:
     free(earliest);
     free(latest);
+    free(earlyact);
+    free(lateact);
     return err;
+}
+
+
+void trans(unsigned i, long v, void *buf) {
+    (void)i;
+    struct __trans *info = (struct __trans *)buf;
+    unsigned from = info->from, to = LINK_TO(v), duration = LINK_WEI(v), idx = LINK_ACT(v);
+    info->e[idx] = info->ve[from];
+    info->l[idx] = info->vl[to] - duration;
 }

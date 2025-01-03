@@ -96,7 +96,7 @@ int LinkedHashTableFind(const LinkedHashTable *table, NODE_TYPE v, hashfunc_t ha
     int err = LinkedListFind(table->buckets + hash, v);
     if (cmpTimes) {
         if (err == -RERR_NOTFOUND)
-            *cmpTimes = LinkedListSize(table->buckets + hash);
+            *cmpTimes = LinkedListSize(table->buckets + hash) + 1;
         else
             *cmpTimes = err + 1; // idx in bucket
     }

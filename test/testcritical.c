@@ -19,9 +19,12 @@ static void tst_create_network(void) {
 #define H 7
 #define I 8
 #define J 9
+#define pack(idx, wei) (((idx) << 8) | (wei))
     ArcDesc descs[] = {{A, B, 8}, {A, C, 6}, {A, E, 7}, {B, D, 3}, {C, D, 10},
         {C, G, 9}, {E, G, 9}, {E, H, 13}, {D, F, 4}, {D, I, 19}, {G, I, 8},
         {G, H, 2}, {H, I, 6}, {F, J, 14}, {I, J, 10}};
+    for (unsigned i = 0; i < sizeof(descs) / sizeof(ArcDesc); i++)
+        descs[i].weight = pack(i, descs[i].weight);
     LinkedGraphInit(graph, vexs.size);
     LinkedGraphConstruct(graph, DIRECTED | NETWORK, &vexs, sizeof(descs) / sizeof(ArcDesc), descs);
     LinkedGraphPrint(graph);

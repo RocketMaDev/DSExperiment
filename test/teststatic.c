@@ -27,7 +27,7 @@ static void tst_create_list(void) {
     puts("=========================\n");
 }
 
-static int keysToSearch[] = {0, 56, 5, 36, 78, 19, 13, 88, 38, 64, 100, 21};
+static int keysToSearch[] = {56, 19, 80, 5, 21, 64, 89, 13, 38, 75, 92, 4, 57, 20, 81, 6, 22, 65, 90, 14, 39, 120, 93};
 static unsigned searchs = sizeof(keysToSearch) / sizeof(int);
 
 static void search_template(const char *searchType, int (*func)(const ArrayList *, int, unsigned *)) {

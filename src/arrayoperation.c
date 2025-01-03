@@ -145,9 +145,9 @@ int ArrayListLinearFind(const ArrayList *list, NODE_TYPE target, Nullable unsign
     int err = ArrayListFind(list, target);
     if (cmpTimes) {
         if (err == -RERR_NOTFOUND)
-            *cmpTimes = list->size;
+            *cmpTimes = list->size + 1;
         else if (err >= 0)
-            *cmpTimes = err + 1;
+            *cmpTimes = list->size - err;
     }
     return err;
 }

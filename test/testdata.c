@@ -19,7 +19,7 @@ static Record infos[] = {
     {75, 20, "Zhao", false},
     {92, 20, "Chen", false},
 };
-#define ninfo sizeof(infos) / sizeof(Record)
+#define ninfo (sizeof(infos) / sizeof(Record))
 
 static Record *map[32];
 #define MAP(k) map[(k) & 0x1f]

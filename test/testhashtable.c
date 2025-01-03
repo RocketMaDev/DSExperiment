@@ -6,7 +6,7 @@
 
 static LinearHashTable table, *ptable = &table;
 static LinkedHashTable links, *plinks = &links;
-static int buf[] = {19, 1, 20, 84, 11, 79, 26, 40, 29, 30, 60, 74, 38};
+static int buf[] = {19, 14, 23, 1, 68, 20, 84, 27, 55, 11, 10, 79, 26, 40, 15, 29, 30, 18, 32, 46, 60, 74, 36, 24, 38};
 static ArrayList keys = {
     buf, sizeof(buf) / sizeof(int), sizeof(buf) / sizeof(int)
 };
@@ -81,9 +81,17 @@ static void search_template(const char *searchType, const void *table, find_func
     printf("ASL of failed %s search: %.2lf\n", searchType, (double)nfsum / nfcnt);
 }
 
+static int findPlus1(const void *tbl, int v, hashfunc_t hasher, unsigned *cmpTimes) {
+    unsigned cmp_times;
+    int err = LinearHashTableFind(tbl, v, hasher, &cmp_times);
+    if (err == -RERR_NOTFOUND)
+        cmp_times++;
+    *cmpTimes = cmp_times;
+    return err;
+}
 static void tst_linear_table(void) {
     puts("=====tst_linear_table=====");
-    search_template("LinearHashTable", ptable, (find_func_t)LinearHashTableFind);
+    search_template("LinearHashTable", ptable, (find_func_t)findPlus1);
     puts("==========================\n");
 }
 
