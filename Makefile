@@ -15,10 +15,11 @@ TARGET_MST = mst
 TARGET_CRITICAL = critical
 TARGET_STATIC = static
 TARGET_HASHTABLE = hashtable
+TARGET_AVL = avl
 TARGETS := $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR)
 TARGETS += $(TARGET_TREE) $(TARGET_HUFFMAN) $(TARGET_MATRIX) $(TARGET_LINKER)
 TARGETS += $(TARGET_SEARCH) $(TARGET_MST) $(TARGET_CRITICAL) $(TARGET_STATIC)
-TARGETS += $(TARGET_HASHTABLE)
+TARGETS += $(TARGET_HASHTABLE) $(TARGET_AVL)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -82,6 +83,9 @@ else ifeq ($(TARGET), $(TARGET_STATIC))
 else ifeq ($(TARGET), $(TARGET_HASHTABLE))
 	DEPS = arraylist.c linkedlist.c hashtable.c
 	TEST = testhashtable.c
+else ifeq ($(TARGET), $(TARGET_AVL))
+	DEPS = arraylist.c tree.c stack.c
+	TEST = testavl.c
 else
 	ERROR = err
 endif

@@ -2,6 +2,7 @@
 #include "rerror.h"
 #include "tree.h"
 #include "stack.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -22,6 +23,9 @@ TreeNode *TreeNewNode(Tree *tree, NODE_TYPE v) {
     node->rnode = NULL;
     node->data = v;
     node->flags &= PLAIN_NODE;
+    node->parent = NULL;
+    node->balance = 0;
+    node->height = 0;
     return node;
 }
 
@@ -249,14 +253,18 @@ static inline int constructBYbs(Tree *tree, const ArrayList *list) {
                 tree->height = layer;
         }
     }
-    tree->flags |= BINSEC_TREE;
     return -RERR_OK;
 cleanup:
     TreeClear(tree);
     return -RERR_OOM;
 }
 
-int TreeConstruct(Tree *tree, const void *buf, enum ConstructorMethod m) {
+static void avlins(unsigned i, NODE_TYPE v, void *buf) {
+    (void)i;
+    TreeAVLInsert((Tree *)buf, v);
+}
+
+int TreeConstruct(Tree *tree, const ArrayList *buf, enum ConstructorMethod m) {
     if (m == BINARY_SEARCH)
         return constructBYbs(tree, buf);
     else if (m == LINEAR)
@@ -270,9 +278,12 @@ int TreeConstruct(Tree *tree, const void *buf, enum ConstructorMethod m) {
         threading_tree(tree->root, &prev);
         prev->flags = RTHREAD; // Rightmost node
         return -RERR_OK;
+    } else if (m == BALANCED_TREE) {
+        tree->flags |= AVL_TREE;
+        ArrayListTraverse((ArrayList *)buf, tree, avlins);
+        return -RERR_OK;
     } else {
-        fprintf(stderr, "Unknown constructor method @%s#L%d, exit\n", __FILE__, __LINE__);
-        exit(1);
+        OUT_OF_ENUM("Unknown method to construct tree");
     }
 }
 
@@ -313,4 +324,255 @@ void TreeClear(Tree *tree) {
 
 void TreeRelease(Tree *tree) {
     TreeClear(tree);
+}
+
+// AVL tree
+
+int TreeAVLFind(Tree *tree, NODE_TYPE v, unsigned int *cmpTimes) {
+    if (!(tree->flags & AVL_TREE))
+        return -RERR_NOTIMPLEMENTED;
+    if (!tree->height)
+        return -RERR_EMPTY;
+    TreeNode *node = tree->root;
+    int located = 0; // 1: found, 2: not found
+    unsigned cmp_times = 0, index = 1;
+    while (!located) {
+        cmp_times++;
+        if (v == node->data)
+            located = 1;
+        else if (v < node->data && node->lnode) {
+            index <<= 1;
+            node = node->lnode;
+        } else if (v > node->data && node->rnode) {
+            index = (index << 1) | 1;
+            node = node->rnode;
+        } else
+            located = 2;
+    }
+    tree->cache = node;
+    if (cmpTimes)
+        *cmpTimes = cmp_times;
+    if (located == 1)
+        return index - 1;
+    else
+        return -RERR_NOTFOUND;
+}
+
+static TreeNode *balanceTree(TreeNode *node, Tree *tree);
+
+int TreeAVLInsert(Tree *tree, NODE_TYPE v) {
+    if (!(tree->flags & AVL_TREE))
+        return -RERR_NOTIMPLEMENTED;
+    TreeNode *node = TreeNewNode(tree, v);
+    if (!node)
+        return -RERR_OOM;
+    if (!tree->height) {
+        tree->root = node;
+        tree->height++;
+        return -RERR_OK;
+    }
+    int err = TreeAVLFind(tree, v, NULL); // using cache here
+    if (err >= 0)
+        return -RERR_EXISTED;
+    assert(err == -RERR_NOTFOUND); // should be the only case
+    TreeNode *parent = tree->cache;
+    node->parent = parent;
+    if (v < parent->data)
+        parent->lnode = node;
+    else
+        parent->rnode = node;
+
+    while (parent) {
+        if (parent->rnode == node)
+            parent->balance--;
+        else
+            parent->balance++;
+        if (parent->balance == 0)
+            break;
+        if (parent->balance == 2 || parent->balance == -2) {
+            balanceTree(parent, tree);
+            break;
+        }
+        // update to top
+        parent->height++;
+        node = parent;
+        parent = parent->parent;
+    }
+    tree->height = tree->root->height;
+    return -RERR_OK;
+}
+
+static TreeNode *deleteNode(TreeNode *node, TreeNode *recv) {
+    if (!node->lnode && !node->rnode) {         // case 0
+        if (node == node->parent->lnode)
+            node->parent->lnode = NULL;
+        else
+            node->parent->rnode = NULL;
+        *recv = *node;
+        return NULL;
+    } else if (!node->lnode && node->rnode) {   // case 1
+        if (node == node->parent->lnode)
+            node->parent->lnode = node->rnode;
+        else
+            node->parent->rnode = node->rnode;
+        node->rnode->parent = node->parent;
+        return node->rnode;
+    } else if (node->lnode && !node->rnode) {   // case 2
+        if (node == node->parent->lnode)
+            node->parent->lnode = node->lnode;
+        else
+            node->parent->rnode = node->lnode;
+        node->lnode->parent = node->parent;
+        return node->lnode;
+    }
+    // have 2 children                          // case 3
+    TreeNode *successor = node->rnode;
+    while (successor->lnode)
+        successor = successor->lnode;
+    TreeNode t = *node;
+    *node = *successor;
+    *successor = t;
+    return deleteNode(node, recv); // must be case 0 or 1
+}
+
+int TreeAVLDelete(Tree *tree, NODE_TYPE v) {
+    if (!(tree->flags & AVL_TREE))
+        return -RERR_NOTIMPLEMENTED;
+    int err = TreeAVLFind(tree, v, NULL);
+    if (err == -RERR_NOTFOUND)
+        return -RERR_NOTFOUND;
+    assert(err >= 0);
+    TreeNode *node = tree->cache; // what we are seeking
+    if (node == tree->root) {
+        if (!node->lnode && !node->rnode) {
+            tree->height = 0;
+            tree->root = NULL;
+        } else if (!node->lnode && node->rnode) {
+            tree->root = node->rnode;
+            tree->height = node->rnode->height;
+            node->rnode->parent = NULL;
+        } else if (node->lnode && !node->rnode) {
+            tree->root = node->lnode;
+            tree->height = node->lnode->height;
+            node->lnode->parent = NULL;
+        } else
+            goto normalCase; // root with 2 children needs more operation
+        free(node);
+        tree->nodes--;
+        return -RERR_OK;
+    }
+normalCase:;
+    TreeNode temp;
+    TreeNode *change = deleteNode(node, &temp);
+    if (node == tree->root) {
+        TreeNode *root = node;
+        while (root->parent)
+            root = root->parent;
+        tree->root = root;
+    }
+    if (!change)
+        change = &temp;
+    free(node);
+    tree->nodes--;
+    TreeNode *parent = change->parent;
+
+    while (parent) {
+        if (parent->rnode == node)
+            parent->balance++;
+        else
+            parent->balance--;
+        if (parent->balance == 1 || parent->balance == -1)
+            break;
+        // update to top
+        if (parent->balance == 0)
+            parent->height--;
+        if (parent->balance == 2 || parent->balance == -2)
+            node = balanceTree(parent, tree);
+        else
+            node = parent;
+        if (!node)
+            break; // in case after balanceTree, no need to update bf
+        parent = node->parent;
+    }
+    tree->height = tree->root->height;
+    return -RERR_OK;
+}
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define HEIGHT(node) ((node) ? (node)->height : -1)
+static TreeNode *rotateLeft(TreeNode *node) {
+    TreeNode *rnode = node->rnode;
+    if (rnode->lnode)
+        rnode->lnode->parent = node;
+    rnode->parent = node->parent;
+    node->parent = rnode;
+    node->rnode = rnode->lnode;
+    rnode->lnode = node;
+
+    node->height = MAX(HEIGHT(node->lnode), HEIGHT(node->rnode)) + 1;
+    node->balance = HEIGHT(node->lnode) - HEIGHT(node->rnode);
+    rnode->height = MAX(HEIGHT(rnode->lnode), HEIGHT(rnode->rnode)) + 1;
+    rnode->balance = HEIGHT(rnode->lnode) - HEIGHT(rnode->rnode);
+    return rnode;
+}
+
+static TreeNode *rotateRight(TreeNode *node) {
+    TreeNode *lnode = node->lnode;
+    if (lnode->rnode)
+        lnode->rnode->parent = node;
+    lnode->parent = node->parent;
+    node->parent = lnode;
+    node->lnode = lnode->rnode;
+    lnode->rnode = node;
+
+    node->height = MAX(HEIGHT(node->lnode), HEIGHT(node->rnode)) + 1;
+    node->balance = HEIGHT(node->lnode) - HEIGHT(node->rnode);
+    lnode->height = MAX(HEIGHT(lnode->lnode), HEIGHT(lnode->rnode)) + 1;
+    lnode->balance = HEIGHT(lnode->lnode) - HEIGHT(lnode->rnode);
+    return lnode;
+}
+
+static TreeNode *balanceTree(TreeNode *node, Tree *tree) {
+    int oldBalance = node->balance, newBalance;
+    TreeNode **slot, *child;
+    if (!node->parent) // root
+        slot = &tree->root;
+    else if (node->parent->lnode == node)
+        slot = &node->parent->lnode;
+    else
+        slot = &node->parent->rnode;
+
+    if (node->balance == 2) {
+        child = node->lnode;
+        if (child->balance == 1) {
+            node = rotateRight(node);
+            *slot = node;
+        } else if (child->balance == -1) {
+            child = rotateLeft(child);
+            node->lnode = child;
+            node = rotateRight(node);
+            *slot = node;
+        } else
+            OUT_OF_ENUM("Not LL or LR");
+        newBalance = node->balance;
+    } else if (node->balance == -2) {
+        child = node->rnode;
+        if (child->balance == -1) {
+            node = rotateLeft(node);
+            *slot = node;
+        } else if (child->balance == 1) {
+            child = rotateRight(child);
+            node->rnode = child;
+            node = rotateLeft(node);
+            *slot = node;
+        } else
+            OUT_OF_ENUM("Not RR or RL");
+        newBalance = node->balance;
+    } else {
+        OUT_OF_ENUM("|balance| is not 2");
+    }
+    if (oldBalance != newBalance)
+        return node;
+    else
+        return NULL;
 }

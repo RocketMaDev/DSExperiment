@@ -15,6 +15,10 @@ typedef struct __tnode {
     struct __tnode *rnode;
     NODE_TYPE data;
     unsigned int flags;
+    // only works in AVL_TREE
+    struct __tnode *parent;
+    unsigned char height;
+    signed char balance;
 } TreeNode;
 
 enum NodeFlags {
@@ -28,13 +32,14 @@ typedef struct {
     unsigned int height;
     unsigned int flags;
     unsigned int nodes;
+    TreeNode *cache; // only works in AVL_TREE
 } Tree;
 
 enum TreeFlag {
     PLAIN_TREE = 0,
     THREADING_TREE = 1,
     HUFFMAN_TREE = 2,
-    BINSEC_TREE = 4,
+    AVL_TREE = 4,
 };
 
 enum TraverseOrder {
@@ -50,6 +55,7 @@ enum ConstructorMethod {
     LINEAR,
     /* the highest bit is used as not-valid flag, add support of threading */
     LINEAR_WITH_THREAD,
+    BALANCED_TREE,
 };
 
 void TreeInit(Tree *);
@@ -57,13 +63,12 @@ void TreeClear(Tree *);
 void TreeRelease(Tree *);
 TreeNode *TreeNewNode(Tree *tree, NODE_TYPE v);
 void TreeFreeNode(TreeNode *);
-/* buf is ArrayList * */
-int TreeConstruct(Tree *tree, const void *buf, enum ConstructorMethod);
+int TreeConstruct(Tree *tree, const ArrayList *buf, enum ConstructorMethod);
 void TreeTraverse(const Tree *tree, enum TraverseOrder order, void *buf, void (*func)(const TreeNode *, void *buf));
 int TreeDegreeCount(const Tree *tree, unsigned int degree);
 unsigned int TreeHeight(const Tree *tree);
 
-int BSTInsert(Tree *tree, NODE_TYPE v);
-int BSTDelete(Tree *tree, NODE_TYPE v);
-int BSTFind(Tree *tree, NODE_TYPE v, Nullable unsigned *cmpTimes);
+int TreeAVLInsert(Tree *tree, NODE_TYPE v);
+int TreeAVLDelete(Tree *tree, NODE_TYPE v);
+int TreeAVLFind(Tree *tree, NODE_TYPE v, Nullable unsigned *cmpTimes);
 #endif
