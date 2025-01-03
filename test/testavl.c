@@ -59,22 +59,22 @@ static void tst_insert_avl(void) {
         else
             printf("Insert existing %d failed\n", values[i]);
     }
-    ptree("AVL tree after 4 insertions: ");
+    ptree("AVL tree after 7 insertions: ");
     puts("========================\n");
 }
 
 static void tst_remove_avl(void) {
     puts("=====tst_remove_avl=====");
-    int values[] = {64, 5, 7, 13, 56};
+    int values[] = {64, 5, 7, 13, 56, 82, 89, 7};
     register unsigned size = sizeof(values) / sizeof(int);
     for (unsigned i = 0; i < size; i++) {
         int err = TreeAVLDelete(tree, values[i]);
         if (err == 0)
             printf("Remove %d successfully\n", values[i]);
         else
-            printf("Remove existing %d failed\n", values[i]);
+            printf("Remove not-existed %d failed\n", values[i]);
     }
-    ptree("AVL tree after 4 removals: ");
+    ptree("AVL tree after 6 removals: ");
     puts("========================\n");
 }
 
