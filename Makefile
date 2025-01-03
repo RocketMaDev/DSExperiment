@@ -145,4 +145,7 @@ chapter3:
 	$(MAKE) TARGET=critical
 
 chapter4:
-
+	$(MAKE) clean_deps
+	$(MAKE) TARGET=static
+	$(MAKE) TARGET=avl
+	$(MAKE) TARGET=hashtable
