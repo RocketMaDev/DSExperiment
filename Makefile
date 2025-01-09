@@ -134,7 +134,7 @@ clean:
 clean_deps:
 	rm -f $(BUILD_DIR)/*.o
 
-.PHONY: all clean clean_deps err chapter1 chapter2 chapter3 chapter4
+.PHONY: all clean clean_deps err chapter1 chapter2 chapter3 chapter4 chapter5
 
 chapter1:
 	$(MAKE) clean_deps
@@ -164,3 +164,9 @@ chapter4:
 	$(MAKE) TARGET=static
 	$(MAKE) TARGET=avl
 	$(MAKE) TARGET=hashtable
+
+chapter5:
+	$(MAKE) clean_deps
+	$(MAKE) TARGET=insert
+	$(MAKE) TARGET=swap
+	$(MAKE) TARGET=selection
