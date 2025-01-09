@@ -1,4 +1,7 @@
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include "../src/arraylist.h"
 typedef struct {
     unsigned key;
     unsigned age;
@@ -32,4 +35,36 @@ static void map_init(void) {
         MAP(infos[i].key) = infos + i;
         keys[i] = infos[i].key;
     }
+}
+
+ArrayList tmp = {(int *)keys, ninfo, ninfo};
+
+static void pitem(unsigned i, int v, void *buf) {
+    (void)i, (void)buf;
+    printf("|%3d|%6s|%6s|%3d|\n", v, MAP(v)->name, MAP(v)->female ? "Female" : "Male", MAP(v)->age);
+}
+
+extern ArrayList *list;
+
+static void tst_create_list(void) {
+    puts("=====tst_create_list=====");
+    ArrayListInit(list, ninfo);
+    int err = ArrayListExtend(list, &tmp);
+    printf("Created search list with status %d\n", err);
+    puts("Info table: [");
+    printf("|%3s|%6s|%6s|%3s|\n", "key", "name", "sex", "age");
+    ArrayListTraverse(list, NULL, pitem);
+    puts("]");
+    puts("=========================\n");
+}
+
+void PrintArrayList(const NODE_TYPE *arr, unsigned size, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    vprintf(fmt, args);
+    va_end(args);
+    printf(": [");
+    for (unsigned i = 0; i < size - 1; i++)
+        printf("%d, ", arr[i]);
+    printf("%d]\n", arr[size - 1]);
 }

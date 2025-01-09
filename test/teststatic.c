@@ -1,6 +1,7 @@
 #include "../src/arraylist.h"
 #include "../src/arrayoperation.h"
 #include <assert.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -8,24 +9,6 @@ static ArrayList x;
 static ArrayList *list = &x;
 
 #include "testdata.c"
-
-static void pitem(unsigned i, int v, void *buf) {
-    (void)i, (void)buf;
-    printf("|%3d|%6s|%6s|%3d|\n", v, MAP(v)->name, MAP(v)->female ? "Female" : "Male", MAP(v)->age);
-}
-
-static void tst_create_list(void) {
-    puts("=====tst_create_list=====");
-    ArrayList tmp = {(int *)keys, ninfo, ninfo};
-    ArrayListInit(list, ninfo);
-    int err = ArrayListExtend(list, &tmp);
-    printf("Created search list with status %d\n", err);
-    puts("Info table: [");
-    printf("|%3s|%6s|%6s|%3s|\n", "key", "name", "sex", "age");
-    ArrayListTraverse(list, NULL, pitem);
-    puts("]");
-    puts("=========================\n");
-}
 
 static int keysToSearch[] = {56, 19, 80, 5, 21, 64, 89, 13, 38, 75, 92, 4, 57, 20, 81, 6, 22, 65, 90, 14, 39, 120, 93};
 static unsigned searchs = sizeof(keysToSearch) / sizeof(int);
