@@ -16,10 +16,13 @@ TARGET_CRITICAL = critical
 TARGET_STATIC = static
 TARGET_HASHTABLE = hashtable
 TARGET_AVL = avl
+TARGET_INSERT = insert
+TARGET_SWAP = swap
+TARGET_SELECTION = selection
 TARGETS := $(TARGET_BOOK) $(TARGET_ARRAY) $(TARGET_LINKED) $(TARGET_QS) $(TARGET_STR)
 TARGETS += $(TARGET_TREE) $(TARGET_HUFFMAN) $(TARGET_MATRIX) $(TARGET_LINKER)
 TARGETS += $(TARGET_SEARCH) $(TARGET_MST) $(TARGET_CRITICAL) $(TARGET_STATIC)
-TARGETS += $(TARGET_HASHTABLE) $(TARGET_AVL)
+TARGETS += $(TARGET_HASHTABLE) $(TARGET_AVL) $(TARGET_INSERT) $(TARGET_SWAP) $(TARGET_SELECTION)
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
@@ -86,6 +89,18 @@ else ifeq ($(TARGET), $(TARGET_HASHTABLE))
 else ifeq ($(TARGET), $(TARGET_AVL))
 	DEPS = arraylist.c tree.c stack.c
 	TEST = testavl.c
+else ifeq ($(TARGET), $(TARGET_INSERT))
+	DEPS = arraylist.c sort.c
+	TEST = testinsert.c
+	CFLAGS += -DDETAILED
+else ifeq ($(TARGET), $(TARGET_SWAP))
+	DEPS = arraylist.c sort.c
+	TEST = testswap.c
+	CFLAGS += -DDETAILED
+else ifeq ($(TARGET), $(TARGET_SELECTION))
+	DEPS = arraylist.c sort.c
+	TEST = testselection.c
+	CFLAGS += -DDETAILED
 else
 	ERROR = err
 endif
