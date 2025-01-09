@@ -76,7 +76,7 @@ else ifeq ($(TARGET), $(TARGET_MST))
 else ifeq ($(TARGET), $(TARGET_CRITICAL))
 	DEPS = linkedgraph.c arraylist.c stack.c aoenet.c
 	TEST = testcritical.c
-	CFLAGS += -include $(TEST_DIR)/definelong.h
+	CFLAGS += -include $(TEST_DIR)/definelong.h -DAOE
 else ifeq ($(TARGET), $(TARGET_STATIC))
 	DEPS = arraylist.c arrayoperation.c
 	TEST = teststatic.c

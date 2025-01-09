@@ -59,7 +59,11 @@ void LinkedGraphPrint(const LinkedGraph *graph) {
             long *arr = (graph->linkTable + i)->arr;
             printf("%s", (char *)(ptr + LINK_TO(arr[j])));
             if (graph->type & NETWORK)
+#ifndef AOE
                 printf("(%d)", (int)LINK_WEIGHT(arr[j]));
+#else
+                printf("(%d)", (int)LINK_WEIGHT(arr[j]) & 0xff);
+#endif
             if (j != nitem - 1) {
                 putchar(',');
                 putchar(' ');
