@@ -136,7 +136,7 @@ static inline int constructBYplain(Tree *tree, const ArrayList *list) {
 #else
         if (arr[i] >= 0 && arr[((i + 1) >> 1) - 1] < 0) // idx 3 depends on idx 1
 #endif
-            return -RERR_CORRUPPTED;
+            return -RERR_CORRUPTED;
     ArrayList stack;
     int err = StackInit(&stack);
     if (err)

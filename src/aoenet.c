@@ -59,7 +59,7 @@ int TopologicalSort(const LinkedGraph *graph, ArrayList * restrict topo, Nullabl
         ArrayListTraverse(graph->linkTable + vex, &ds, itrop);
     }
     if (topo->size < graph->vexs.size)
-        err = -RERR_CORRUPPTED;
+        err = -RERR_CORRUPTED;
     else
         err = -RERR_OK;
 cleanup:
@@ -76,6 +76,7 @@ struct __trans {
     unsigned *e;
 };
 static void trans(unsigned, long, void *);
+
 int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
     if (graph->linkTable == NULL || topo->size == 0)
         return -RERR_EMPTY;
@@ -86,7 +87,7 @@ int PrintCritialPath(const LinkedGraph *graph, const ArrayList *topo) {
     unsigned narc = 0;
     for (unsigned i = 0; i < nvex; i++)
         narc += ArrayListSize(graph->linkTable + i);
-    int err;
+    int err = -RERR_OK;
     unsigned *earliest = malloc(sizeof(unsigned) * nvex);
     unsigned *latest = malloc(sizeof(unsigned) * nvex);
     unsigned *earlyact = malloc(sizeof(unsigned) * narc);

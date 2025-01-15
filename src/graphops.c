@@ -117,7 +117,7 @@ static int mst_prim(const MatrixGraph *graph, unsigned initVex) {
             }
         if (minVex == INF) { // no vex choosed, mst can not be built
             free(closedge);
-            return -RERR_CORRUPPTED;
+            return -RERR_CORRUPTED;
         }
 
         adjVex = closedge[minVex].adjvex; // minVex is not connected, going to connect to adjVex
