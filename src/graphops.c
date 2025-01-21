@@ -100,6 +100,8 @@ static int mst_prim(const MatrixGraph *graph, unsigned initVex) {
 
     // init stage
     struct closedge *closedge = malloc(sizeof(struct closedge) * size);
+    if (!closedge)
+        return -RERR_OOM;
     closedge[initVex].lowcost = 0;
     for (unsigned i = 0; i < size; i++)
         if (i != initVex)
@@ -144,6 +146,9 @@ static int mst_kruskal(const MatrixGraph *graph, ArcDesc *descs, unsigned descSi
         return -RERR_NOTIMPLEMENTED;
     register const long *vexnames = graph->vexs.arr;
     register unsigned size = graph->vexs.size;
+    unsigned *connvex = malloc(sizeof(unsigned) * size);
+    if (!connvex)
+        return -RERR_OOM;
     qsort(descs, descSize, sizeof(ArcDesc), desccmp);
     // print sorted descs
     puts("Sorted descs: [");
@@ -151,7 +156,6 @@ static int mst_kruskal(const MatrixGraph *graph, ArcDesc *descs, unsigned descSi
         printf("    <%s <-> %s> (%d)\n",
             VEX_NAME(descs[i].arcfrom), VEX_NAME(descs[i].arcto), descs[i].weight);
     puts("]");
-    unsigned *connvex = malloc(sizeof(unsigned) * size);
     for (unsigned i = 0; i < size; i++)
         connvex[i] = i;
 
