@@ -1,3 +1,7 @@
+/**
+ * Chapter 2 - Linear Table
+ * Experiment 1.2 - Linked Linear Table
+ */
 #ifndef __LINKED_LIST_H__
 #define __LINKED_LIST_H__
 #include "rerror.h"

@@ -1,3 +1,7 @@
+/**
+ * Chapter 3 - STACK & QUEUE
+ * Experiment 1.3 - Stack and Queue
+ */
 #ifndef __QS_OPERATION_H__
 #define __QS_OPERATION_H__
 #ifdef NODE_TYPE

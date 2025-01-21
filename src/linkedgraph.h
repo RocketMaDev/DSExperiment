@@ -1,3 +1,7 @@
+/**
+ * Chapter 6 - GRAPH
+ * Experiment 3.2 - Linked Graph
+ */
 #ifndef __LINKED_GRAPH_H__
 #define __LINKED_GRAPH_H__
 #include <stdbool.h>

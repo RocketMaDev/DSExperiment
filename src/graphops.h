@@ -1,3 +1,8 @@
+/**
+ * Chapter 6 - GRAPH
+ * Experiment 3.3 - Graph Traverse
+ * Experiment 3.4 - Minimal Spanning Tree
+ */
 #ifndef __GRAPH_OPS_H__
 #define __GRAPH_OPS_H__
 #include "matrixgraph.h"

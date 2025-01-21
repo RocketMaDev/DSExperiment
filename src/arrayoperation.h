@@ -1,3 +1,10 @@
+/**
+ * Chapter 2 - LINEAR TABLE
+ * Experiment 1.1 - Sequential Linear Table
+ *
+ * Chapter 7 - SEARCHING
+ * Experiment 4.1 - Static Searching
+ */
 #ifndef __ARRAY_OPERATION_H__
 #define __ARRAY_OPERATION_H__
 

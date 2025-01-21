@@ -1,3 +1,7 @@
+/**
+ * Chapter 7 - SEARCHING
+ * Experiment 4.3 - Hash Table
+ */
 #ifndef __HASH_TABLE_H__
 #define __HASH_TABLE_H__
 #include <stddef.h>

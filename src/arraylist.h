@@ -1,3 +1,7 @@
+/**
+ * Chapter 2 - LINEAR TABLE
+ * Experiment 1.1 - Sequential Linear Table
+ */
 #ifndef __ARRAY_LIST_H__
 #define __ARRAY_LIST_H__
 #include "rerror.h"

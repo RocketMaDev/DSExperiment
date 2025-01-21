@@ -1,3 +1,7 @@
+/**
+ * Chapter 2 - Linear Table
+ * Experiment 1.2 - Linked Linear Table
+ */
 #ifndef __LIST_OPERATION_H__
 #define __LIST_OPERATION_H__
 

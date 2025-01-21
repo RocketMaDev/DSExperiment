@@ -1,5 +1,6 @@
 /**
- * Header file of "Activity on Edge Network" part in chapter 6 - GRAPH
+ * Chapter 6 - GRAPH
+ * Experiment 3.5 - Activity on Edge Network
  */
 #ifndef __AOE_NETWORK_H__
 #define __AOE_NETWORK_H__

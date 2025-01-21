@@ -1,3 +1,7 @@
+/**
+ * Chapter 4 - STRING
+ * Experiment 1.4 - String
+ */
 #ifndef __STR_H__
 #define __STR_H__
 #ifdef NODE_TYPE

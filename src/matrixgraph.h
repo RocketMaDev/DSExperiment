@@ -1,3 +1,7 @@
+/**
+ * Chapter 6 - GRAPH
+ * Experiment 3.1 - Matrix Graph
+ */
 #ifndef __MATRIX_GRAPH_H__
 #define __MATRIX_GRAPH_H__
 #include <stdbool.h>

@@ -1,3 +1,7 @@
+/**
+ * Chapter 3 - STACK & QUEUE
+ * Experiment 1.3 - Stack and Queue
+ */
 #ifndef __STACK_H__
 #define __STACK_H__
 

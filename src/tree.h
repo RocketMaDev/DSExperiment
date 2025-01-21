@@ -1,3 +1,11 @@
+/**
+ * Chapter 5 - TREE
+ * Experiment 2.1 - Binary Tree
+ * Experiment 2.2 - Threading Tree
+ *
+ * Chapter 7 - SEARCHING
+ * Experiment 4.2 - Dynamic Searching
+ */
 #ifndef __TREE_H__
 #define __TREE_H__
 #ifndef NODE_TYPE

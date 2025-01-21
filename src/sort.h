@@ -1,3 +1,9 @@
+/**
+ * Chapter 8 - SORT
+ * Experiment 5.1 - Insertion Sort
+ * Experiment 5.2 - Exchange Sort
+ * Experiment 5.3 - Selection Sort
+ */
 #ifndef __SORT_H__
 #define __SORT_H__
 #include "arraylist.h"

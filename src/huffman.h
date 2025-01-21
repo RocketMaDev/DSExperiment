@@ -1,3 +1,7 @@
+/**
+ * Chapter 5 - TREE
+ * Experiment 2.3 - Huffman Encoding
+ */
 #ifndef __HUFFMAN_H__
 #define __HUFFMAN_H__
 #include "tree.h"
