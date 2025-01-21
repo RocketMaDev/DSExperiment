@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-void LinkedGraphInit(LinkedGraph *graph, unsigned nvex) {
+int LinkedGraphInit(LinkedGraph *graph, unsigned nvex) {
     graph->linkTable = NULL;
     graph->type = 0;
-    ArrayListInit(&graph->vexs, nvex);
+    return ArrayListInit(&graph->vexs, nvex);
 }
 
 void LinkedGraphRelease(LinkedGraph *graph) {

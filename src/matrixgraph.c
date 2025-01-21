@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-void MatrixGraphInit(MatrixGraph *graph, unsigned nvex) {
+int MatrixGraphInit(MatrixGraph *graph, unsigned nvex) {
     graph->arcs = NULL;
     graph->type = 0;
-    ArrayListInit(&graph->vexs, nvex);
+    return ArrayListInit(&graph->vexs, nvex);
 }
 
 void MatrixGraphRelease(MatrixGraph *graph) {

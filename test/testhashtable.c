@@ -17,8 +17,8 @@ static size_t hasher(int v) {
 
 static void insert_table(unsigned i, int v, void *buf) {
     (void)i, (void)buf;
-    int err = LinearHashTableInsert(ptable, v, hasher);
-    err += LinkedHashTableInsert(plinks, v, hasher);
+    int err = LinearHashTableInsert(ptable, v);
+    err += LinkedHashTableInsert(plinks, v);
     if (err < 0)
         OUT_OF_ENUM("Failed to insert hash ptable!");
 }
@@ -30,8 +30,8 @@ static void plink(unsigned i, int v) {
 
 static void tst_create_tables(void) {
     puts("=====tst_create_tables=====");
-    int err = LinearHashTableInit(ptable, 16);
-    err += LinkedHashTableInit(plinks, 13);
+    int err = LinearHashTableInit(ptable, 16, hasher);
+    err += LinkedHashTableInit(plinks, 13, hasher);
     printf("Initialized 2 hash tables with status %d\n", err);
     int buf[] = {19, 14, 23, 1, 68, 20, 84, 27, 55, 11, 10, 79};
     ArrayList tmp = {buf, sizeof(buf) / sizeof(int), sizeof(buf) / sizeof(int)};
@@ -57,13 +57,13 @@ static void tst_create_tables(void) {
     puts("===========================\n");
 }
 
-typedef int (*find_func_t)(const void *, int, hashfunc_t, unsigned *);
+typedef int (*find_func_t)(const void *, int, unsigned *);
 static void search_template(const char *searchType, const void *table, find_func_t func) {
     unsigned fsum = 0, fcnt = 0, nfsum = 0, nfcnt = 0;
     unsigned cur;
     for (unsigned i = 0; i < keys.size; i++) {
         int key = keys.arr[i];
-        int err = func(table, key, hasher, &cur);
+        int err = func(table, key, &cur);
         assert(err >= 0 || err == -RERR_NOTFOUND);
         if (err != -RERR_NOTFOUND) {
             printf("Found key %d @ %d with %d times of comparison\n",
@@ -81,9 +81,9 @@ static void search_template(const char *searchType, const void *table, find_func
     printf("ASL of failed %s search: %.2lf\n", searchType, (double)nfsum / nfcnt);
 }
 
-static int findPlus1(const void *tbl, int v, hashfunc_t hasher, unsigned *cmpTimes) {
+static int findPlus1(const void *tbl, int v, unsigned *cmpTimes) {
     unsigned cmp_times;
-    int err = LinearHashTableFind(tbl, v, hasher, &cmp_times);
+    int err = LinearHashTableFind(tbl, v, &cmp_times);
     if (err == -RERR_NOTFOUND)
         cmp_times++;
     *cmpTimes = cmp_times;

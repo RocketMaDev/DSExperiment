@@ -3,11 +3,11 @@
 #include "rerror.h"
 #include <stdlib.h>
 /* Linear */
-int LinearHashTableInit(LinearHashTable *table, unsigned size) {
+int LinearHashTableInit(LinearHashTable *table, unsigned size, hashfunc_t hasher) {
     table->size = 0;
     if (!size)
         return -RERR_EMPTY;
-    if (size > 63)
+    if (size > 64)
         return -RERR_OVERFLOW;
     table->arr = malloc(size * sizeof(NODE_TYPE));
     if (!table->arr)
@@ -15,17 +15,18 @@ int LinearHashTableInit(LinearHashTable *table, unsigned size) {
     table->count = 0;
     table->size = size;
     table->used = 0;
+    table->hasher = hasher;
     return -RERR_OK;
 }
 
-int LinearHashTableInsert(LinearHashTable *table, NODE_TYPE v, hashfunc_t hasher) {
+int LinearHashTableInsert(LinearHashTable *table, NODE_TYPE v) {
     if (!table->size)
         return -RERR_EMPTY;
     if (table->size == table->count)
         return -RERR_OVERFLOW;
-    register unsigned long hash = hasher(v) % table->size;
+    register unsigned long hash = table->hasher(v) % table->size;
     unsigned offset;
-    if (LinearHashTableFind(table, v, hasher, &offset) != -RERR_NOTFOUND)
+    if (LinearHashTableFind(table, v, &offset) != -RERR_NOTFOUND)
         return -RERR_EXISTED;
     hash += offset;
     table->arr[hash] = v;
@@ -34,10 +35,10 @@ int LinearHashTableInsert(LinearHashTable *table, NODE_TYPE v, hashfunc_t hasher
     return -RERR_OK;
 }
 
-int LinearHashTableFind(const LinearHashTable *table, NODE_TYPE v, hashfunc_t hasher, Nullable unsigned *cmpTimes) {
+int LinearHashTableFind(const LinearHashTable *table, NODE_TYPE v, Nullable unsigned *cmpTimes) {
     if (!table->size)
         return -RERR_EMPTY;
-    register unsigned long hash = hasher(v) % table->size;
+    register unsigned long hash = table->hasher(v) % table->size;
     unsigned cmp_times = 0;
     while (table->used & (1 << hash)) {
         cmp_times++;
@@ -61,7 +62,7 @@ void LinearHashTableRelease(LinearHashTable *table) {
 }
 
 /* Linked */
-int LinkedHashTableInit(LinkedHashTable *table, unsigned size) {
+int LinkedHashTableInit(LinkedHashTable *table, unsigned size, hashfunc_t hasher) {
     if (!size)
         return -RERR_EMPTY;
     table->size = 0;
@@ -72,13 +73,14 @@ int LinkedHashTableInit(LinkedHashTable *table, unsigned size) {
     for (unsigned i = 0; i < size; i++)
         LinkedListInit(table->buckets + i);
     table->size = size;
+    table->hasher = hasher;
     return -RERR_OK;
 }
 
-int LinkedHashTableInsert(LinkedHashTable *table, NODE_TYPE v, hashfunc_t hasher) {
+int LinkedHashTableInsert(LinkedHashTable *table, NODE_TYPE v) {
     if (!table->size)
         return -RERR_EMPTY;
-    register unsigned hash = hasher(v) % table->size;
+    register unsigned hash = table->hasher(v) % table->size;
     if (LinkedListFind(table->buckets + hash, v) != -RERR_NOTFOUND)
         return -RERR_EXISTED;
     int err;
@@ -89,10 +91,10 @@ int LinkedHashTableInsert(LinkedHashTable *table, NODE_TYPE v, hashfunc_t hasher
     return -RERR_OK;
 }
 
-int LinkedHashTableFind(const LinkedHashTable *table, NODE_TYPE v, hashfunc_t hasher, Nullable unsigned *cmpTimes) {
+int LinkedHashTableFind(const LinkedHashTable *table, NODE_TYPE v, Nullable unsigned *cmpTimes) {
     if (!table->size)
         return -RERR_EMPTY;
-    register unsigned hash = hasher(v) % table->size;
+    register unsigned hash = table->hasher(v) % table->size;
     int err = LinkedListFind(table->buckets + hash, v);
     if (cmpTimes) {
         if (err == -RERR_NOTFOUND)

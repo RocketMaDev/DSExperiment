@@ -100,7 +100,7 @@ static void traverse(const TreeNode *node, void *buf) {
         ((struct __counter *)buf)->count++;
 }
 
-int TreeDegreeCount(const Tree *tree, unsigned int degree) {
+unsigned int TreeDegreeCount(const Tree *tree, unsigned int degree) {
     if (tree->height == 0)
         return -RERR_EMPTY;
     struct __counter cnt = {degree, 0};
@@ -117,6 +117,7 @@ unsigned int TreeHeight(const Tree *tree) {
 #define IFOOM(tree, v) \
     if (!(node = TreeNewNode(tree, v))) \
         goto cleanup
+
 __attribute__((always_inline))
 static inline int constructBYplain(Tree *tree, const ArrayList *list) {
     NODE_TYPE tmp;
@@ -218,6 +219,7 @@ __attribute__((always_inline))
 static inline int constructBYbs(Tree *tree, const ArrayList *list) {
     if (list->size == 0)
         return -RERR_EMPTY;
+    int err = -RERR_OOM;
     TreeNode *node;
     NODE_TYPE *arr = list->arr;
     unsigned int size = list->size;
@@ -247,7 +249,8 @@ static inline int constructBYbs(Tree *tree, const ArrayList *list) {
                 IFOOM(tree, arr[i]);
                 ptn->rnode = node;
             } else {
-                assert(false); // duplicated value detected
+                err = -RERR_CORRUPTED;
+                goto cleanup;
             }
             if (layer > tree->height)
                 tree->height = layer;
@@ -256,7 +259,7 @@ static inline int constructBYbs(Tree *tree, const ArrayList *list) {
     return -RERR_OK;
 cleanup:
     TreeClear(tree);
-    return -RERR_OOM;
+    return err;
 }
 
 static void avlins(unsigned i, NODE_TYPE v, void *buf) {
