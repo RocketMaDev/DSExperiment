@@ -134,9 +134,9 @@ clean:
 clean_deps:
 	rm -f $(BUILD_DIR)/*.o
 
-.PHONY: all clean clean_deps err chapter1 chapter2 chapter3 chapter4 chapter5
+.PHONY: all clean clean_deps err experiment1 experiment2 experiment3 experiment4 experiment5
 
-chapter1:
+experiment1:
 	$(MAKE) clean_deps
 	$(MAKE) TARGET=array
 	$(MAKE) TARGET=linked
@@ -146,12 +146,12 @@ chapter1:
 	$(MAKE) clean_deps
 	$(MAKE) TARGET=str
 
-chapter2:
+experiment2:
 	$(MAKE) clean_deps
 	$(MAKE) TARGET=tree
 	$(MAKE) TARGET=huffman
 
-chapter3:
+experiment3:
 	$(MAKE) clean_deps
 	$(MAKE) TARGET=MatrixGraph
 	$(MAKE) TARGET=LinkedGraph
@@ -159,13 +159,13 @@ chapter3:
 	$(MAKE) TARGET=search
 	$(MAKE) TARGET=critical
 
-chapter4:
+experiment4:
 	$(MAKE) clean_deps
 	$(MAKE) TARGET=static
 	$(MAKE) TARGET=avl
 	$(MAKE) TARGET=hashtable
 
-chapter5:
+experiment5:
 	$(MAKE) clean_deps
 	$(MAKE) TARGET=insert
 	$(MAKE) TARGET=swap
