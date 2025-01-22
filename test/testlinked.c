@@ -33,13 +33,15 @@ static void tst_linked_append(void) {
     puts("===========================\n");
 }
 
-static void itrprint(unsigned int i, NODE_TYPE v) {
+static void itrprint(unsigned int i, NODE_TYPE v, void *buf) {
+    (void)i;
+    (void)buf;
     printf("%d -> ", v);
 }
 
 static void print_list(const char *listName, const LinkedList *list) {
     printf("LinkedList %s: ", listName);
-    LinkedListTraverse((LinkedList *)list, itrprint);
+    LinkedListTraverse((LinkedList *)list, NULL, itrprint);
     puts("NULL");
 }
 

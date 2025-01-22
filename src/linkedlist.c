@@ -213,20 +213,19 @@ int LinkedListRemove(LinkedList *list, NODE_TYPE v) {
     return count;
 }
 
-void LinkedListTraverse(LinkedList *list, void (*func)(unsigned int, NODE_TYPE)) {
+void LinkedListTraverse(LinkedList *list, void *buf, void (*func)(unsigned int, NODE_TYPE, void *)) {
     if (!list->head)
         return;
     NODE *node = list->head;
     unsigned int index = 0;
     do {
-        func(index++, node->value);
+        func(index++, node->value, buf);
         node = node->next;
     } while (node);
 }
 
-static NODE_TYPE *valsToCopy;
-static void cp_vals(unsigned int index, NODE_TYPE v) {
-    valsToCopy[index] = v;
+static void cp_vals(unsigned int index, NODE_TYPE v, void *buf) {
+    ((NODE_TYPE *)buf)[index] = v;
 }
 
 int LinkedListExtend(LinkedList *dst, const LinkedList *src) {
@@ -234,10 +233,10 @@ int LinkedListExtend(LinkedList *dst, const LinkedList *src) {
         return -RERR_OK;
     LinkedList buf;
     LinkedListInit(&buf);
-    valsToCopy = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * src->size);
+    NODE_TYPE *valsToCopy = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * src->size);
     if (!valsToCopy)
         return -RERR_OOM;
-    LinkedListTraverse((LinkedList *)src, cp_vals);
+    LinkedListTraverse((LinkedList *)src, valsToCopy, cp_vals);
     for (unsigned int i = 0; i < src->size; i++)
         if (__builtin_expect(LinkedListAppend(&buf, valsToCopy[i]) < 0, 0))
             goto cleanup;

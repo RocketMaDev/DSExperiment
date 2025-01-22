@@ -153,9 +153,10 @@ int LinkedListRemove(LinkedList *list, NODE_TYPE v);
  * Traverse every element in list with `func`.
  *
  * @param list  An linked list.
+ * @param buf   An arbitrary pointer which will be `func`'s third arg when called.
  * @param func  The function to traverse the list.
  */
-void LinkedListTraverse(LinkedList *list, void (*func)(unsigned int index, NODE_TYPE v));
+void LinkedListTraverse(LinkedList *list, void *buf, void (*func)(unsigned int index, NODE_TYPE v, void *buf));
 /**
  * Extend `dst` with `src`. If `dst` is empty, then it acts like clone.
  *

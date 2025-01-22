@@ -33,13 +33,15 @@ static void tst_book_append(void) {
     puts("=========================\n");
 }
 
-static void itrprint(unsigned int i, NODE_TYPE v) {
+static void itrprint(unsigned int i, NODE_TYPE v, void *buf) {
+    (void)i;
+    (void)buf;
     printf("<Book %s: %s -- %.2f>\n", v.bookid, v.bookname, v.price);
 }
 
 static void print_list(const char *listName, const LinkedList *list) {
     printf("LinkedList %s:\n", listName);
-    LinkedListTraverse((LinkedList *)list, itrprint);
+    LinkedListTraverse((LinkedList *)list, NULL, itrprint);
 }
 
 static void tst_book_iter(void) {

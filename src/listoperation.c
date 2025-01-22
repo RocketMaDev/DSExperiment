@@ -1,13 +1,11 @@
 #include "listoperation.h"
 #include "linkedlist.h"
+#include "rerror.h"
 #include <assert.h>
 #include <stdlib.h>
 
-static NODE_TYPE *gbuf1;
-static NODE_TYPE *gbuf2;
-
-static void cp_vals1(unsigned int index, NODE_TYPE v) {
-    gbuf1[index] = v;
+static void cp_vals1(unsigned int index, NODE_TYPE v, void *buf) {
+    ((NODE_TYPE *)buf)[index] = v;
 }
 
 int Union(LinkedList *a, const LinkedList *b, LinkedList *ans) {
@@ -18,18 +16,21 @@ int Union(LinkedList *a, const LinkedList *b, LinkedList *ans) {
             return LinkedListExtend(ans, a);
         return -RERR_OK;
     }
-    free(gbuf1);
-    gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
+    NODE_TYPE *gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
+    int err = -RERR_OOM;
     if (!gbuf1)
-        return -RERR_OOM;
-    LinkedListTraverse((LinkedList *)b, cp_vals1);
+        goto cleanup;
+    LinkedListTraverse((LinkedList *)b, gbuf1, cp_vals1);
     
     if (ans && LinkedListExtend(ans, a) < 0)
-        return -RERR_OOM;
+        goto cleanup;
     LinkedList *target = ans ? ans : a;
     for (unsigned int i = 0; i < b->size; i++)
         LinkedListRemove(target, gbuf1[i]);
-    return LinkedListExtend(target, b);
+    err = LinkedListExtend(target, b);
+cleanup:
+    free(gbuf1);
+    return err;
 }
 
 int Intersection(LinkedList *a, const LinkedList *b, LinkedList *ans) {
@@ -39,14 +40,13 @@ int Intersection(LinkedList *a, const LinkedList *b, LinkedList *ans) {
         LinkedListClear(ans ? ans : a);
         return -RERR_OK;
     }
-    free(gbuf1);
-    gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
-    if (!gbuf1)
-        return -RERR_OOM;
-    LinkedListTraverse((LinkedList *)b, cp_vals1);
+    NODE_TYPE *gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
+    NODE_TYPE *gbuf2 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
+    if (!gbuf1 || !gbuf2)
+        goto cleanup;
+    LinkedListTraverse((LinkedList *)b, gbuf1, cp_vals1);
 
     unsigned int count = 0;
-    gbuf2 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     for (unsigned int i = 0; i < b->size; i++)
         if (LinkedListFind(a, gbuf1[i]) >= 0)
             gbuf2[count++] = gbuf1[i];
@@ -56,8 +56,14 @@ int Intersection(LinkedList *a, const LinkedList *b, LinkedList *ans) {
     LinkedList *target = ans ? ans : a;
     for (unsigned int i = 0; i < count; i++)
         if (LinkedListAppend(target, gbuf2[i]) < 0)
-            return -RERR_OOM;
+            goto cleanup;
+    free(gbuf1);
+    free(gbuf2);
     return -RERR_OK;
+cleanup:
+    free(gbuf1);
+    free(gbuf2);
+    return -RERR_OOM;
 }
 
 int Difference(LinkedList *a, const LinkedList *b, LinkedList *ans) {
@@ -68,45 +74,53 @@ int Difference(LinkedList *a, const LinkedList *b, LinkedList *ans) {
             return LinkedListExtend(ans, a);
         return -RERR_OK;
     }
-    free(gbuf1);
-    gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
+    NODE_TYPE *gbuf1 = (NODE_TYPE *)malloc(sizeof(NODE_TYPE) * b->size);
     if (!gbuf1)
-        return -RERR_OOM;
-    LinkedListTraverse((LinkedList *)b, cp_vals1);
+        goto cleanup;
+    LinkedListTraverse((LinkedList *)b, gbuf1, cp_vals1);
     
     if (ans && LinkedListExtend(ans, a) < 0)
-        return -RERR_OOM;
+        goto cleanup;
     LinkedList *target = ans ? ans : a;
     for (unsigned int i = 0; i < b->size; i++)
         LinkedListRemove(target, gbuf1[i]);
+    free(gbuf1);
     return -RERR_OK;
+cleanup:
+    free(gbuf1);
+    return -RERR_OOM;
 }
 
-static int detected;
-static NODE_TYPE t;
-static unsigned int *todelete;
-static unsigned int count;
+struct __dup {
+    int detected;
+    unsigned int count;
+    unsigned int *todelete;
+    NODE_TYPE t;
+};
 
-void detect_dup(unsigned int index, NODE_TYPE v) {
-    if (t != v)
+void detect_dup(unsigned int index, NODE_TYPE v, void *buf) {
+    register struct __dup *dup = (struct __dup *)buf;
+    if (dup->t != v)
         return;
-    if (!detected && (detected = 1))
+    if (!dup->detected && (dup->detected = 1))
         return;
-    todelete[count++] = index;
+    dup->todelete[dup->count++] = index;
 }
 
 int Purge(LinkedList *list) {
     if (!list->head)
         return -RERR_OK;
-    todelete = (unsigned int *)malloc(sizeof(unsigned int) * list->size);
+    struct __dup dup = {};
+    unsigned int *todelete = (unsigned int *)malloc(sizeof(unsigned int) * list->size);
     if (!todelete)
         return -RERR_OOM;
+    dup.todelete = todelete;
     for (unsigned int i = 0; i < list->size; i++) {
-        detected = 0;
-        assert(LinkedListGet(list, i, &t) == 0);
-        count = 0;
-        LinkedListTraverse(list, detect_dup);
-        for (unsigned int j = 0; j < count; j++) {
+        dup.detected = 0;
+        assert(LinkedListGet(list, i, &dup.t) == 0);
+        dup.count = 0;
+        LinkedListTraverse(list, &dup, detect_dup);
+        for (unsigned int j = 0; j < dup.count; j++) {
             assert(LinkedListDelete(list, todelete[j] - j, NULL) == 0);
             if (todelete[j] <= i)
                 i--;
@@ -191,9 +205,3 @@ cleanup:
 }
 
 #undef OOM_EX
-
-__attribute__((destructor))
-static void cleanup_gbuf(void) {
-    free(gbuf1);
-    free(gbuf2);
-}

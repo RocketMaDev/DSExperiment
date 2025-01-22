@@ -23,8 +23,9 @@ static void insert_table(unsigned i, int v, void *buf) {
         OUT_OF_ENUM("Failed to insert hash ptable!");
 }
 
-static void plink(unsigned i, int v) {
+static void plink(unsigned i, int v, void *buf) {
     (void)i;
+    (void)buf;
     printf("%d -> ", v);
 }
 
@@ -51,7 +52,7 @@ static void tst_create_tables(void) {
     puts("LinkedHashTable: ");
     for (unsigned i = 0; i < links.size; i++) {
         printf("%d: ", i);
-        LinkedListTraverse(links.buckets + i, plink);
+        LinkedListTraverse(links.buckets + i, NULL, plink);
         puts("NULL");
     }
     puts("===========================\n");
