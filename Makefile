@@ -89,6 +89,7 @@ else ifeq ($(TARGET), $(TARGET_HASHTABLE))
 else ifeq ($(TARGET), $(TARGET_AVL))
 	DEPS = arraylist.c tree.c stack.c
 	TEST = testavl.c
+	CFLAGS += -DNO_CREATE_LIST
 else ifeq ($(TARGET), $(TARGET_INSERT))
 	DEPS = arraylist.c sort.c
 	TEST = testinsert.c

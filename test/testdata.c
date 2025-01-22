@@ -39,13 +39,16 @@ static void map_init(void) {
 
 ArrayList tmp = {(int *)keys, ninfo, ninfo};
 
+#ifndef NO_CREATE_LIST
 static void pitem(unsigned i, int v, void *buf) {
     (void)i, (void)buf;
     printf("|%3d|%6s|%6s|%3d|\n", v, MAP(v)->name, MAP(v)->female ? "Female" : "Male", MAP(v)->age);
 }
+#endif
 
 extern ArrayList *list;
 
+#ifndef NO_CREATE_LIST
 static void tst_create_list(void) {
     puts("=====tst_create_list=====");
     ArrayListInit(list, ninfo);
@@ -57,6 +60,7 @@ static void tst_create_list(void) {
     puts("]");
     puts("=========================\n");
 }
+#endif
 
 void PrintArrayList(const NODE_TYPE *arr, unsigned size, const char *fmt, ...) {
     va_list args;
