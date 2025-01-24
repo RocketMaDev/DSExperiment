@@ -14,6 +14,7 @@ Hangzhou Dianzi University, Cyber Security college.
    in `src/`, object files are stored in `build/` and executables are
    are stored in `./`.
 5. Compile executables with GNU Make conveniently.
+6. Implement in **pure C**.
 
 To meet some strange requirements in Chinese textbook, some code
 may looks strange.
