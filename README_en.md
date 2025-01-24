@@ -56,6 +56,12 @@ For instance, run `git checkout experiment1` to trace back to the time
 when I finished writing experiment 1. After packaging code with tools
 like `zip`, run `git checkout` to rewind to the HEAD of main.
 
+## Detailed experiment tasks
+
+Detailed tasks are packaged and uploaded to Releases, but they are ALL
+IN CHINESE! There is no need for you to check the tasks out as the
+function names have indicate a lot.
+
 ## License
 
 This project is distributed under GPLv3, see [LICENSE](LICENSE)

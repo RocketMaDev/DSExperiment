@@ -47,6 +47,11 @@
 例如使用`git checkout experiment1`可以回溯到实验1的代码，在使用zip等工具打包后，
 使用`git checkout main`回到主线头部。
 
+## 实验具体任务
+
+实验的所有任务我打包放在Releases里了，请自行解压。除了最后一个实验，其他实验都验收通过了，
+最后一个实验没有安排验收课，因此说不清楚验收情况请知悉。
+
 ## License
 
 本项目基于GPLv3分发，详情请见[LICENSE](LICENSE)。
