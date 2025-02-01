@@ -63,6 +63,11 @@ Detailed tasks are packaged and uploaded to Releases, but they are ALL
 IN CHINESE! There is no need for you to check the tasks out as the
 function names have indicate a lot.
 
+## Credit
+
+Code in sorting chapter is adapted from [@zhouxumeng213's](https://github.com/zhouxumeng213/sort)
+repo. Some optimization in AVL tree is proved by [this article from zhihu](https://zhuanlan.zhihu.com/p/454080520).
+
 ## License
 
 This project is distributed under GPLv3, see [LICENSE](LICENSE)

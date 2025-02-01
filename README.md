@@ -53,6 +53,11 @@
 实验的所有任务我打包放在Releases里了，请自行解压。除了最后一个实验，其他实验都验收通过了，
 最后一个实验没有安排验收课，因此说不清楚验收情况请知悉。
 
+## 致谢
+
+排序模块用到了[@zhouxumeng213](https://github.com/zhouxumeng213/sort)的代码，
+关于avl树优化验证来自[这篇知乎上的文章](https://zhuanlan.zhihu.com/p/454080520)。
+
 ## License
 
 本项目基于GPLv3分发，详情请见[LICENSE](LICENSE)。

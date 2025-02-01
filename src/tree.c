@@ -361,6 +361,10 @@ int TreeAVLFind(Tree *tree, NODE_TYPE v, unsigned int *cmpTimes) {
         return -RERR_NOTFOUND;
 }
 
+/*
+ * The optimization, that is, backtracking tree node to update `balance`,
+ * is proved by https://zhuanlan.zhihu.com/p/454080520
+ */
 static TreeNode *balanceTree(TreeNode *node, Tree *tree);
 
 int TreeAVLInsert(Tree *tree, NODE_TYPE v) {

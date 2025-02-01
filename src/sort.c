@@ -1,3 +1,6 @@
+/*
+ * Most of this file is adapted from https://github.com/zhouxumeng213/sort
+ */
 #include "sort.h"
 
 #include <stdio.h>
