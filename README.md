@@ -58,6 +58,10 @@
 排序模块用到了[@zhouxumeng213](https://github.com/zhouxumeng213/sort)的代码，
 关于avl树优化验证来自[这篇知乎上的文章](https://zhuanlan.zhihu.com/p/454080520)。
 
+## 博客
+
+看看这个项目的博客： https://rocketma.dev/2025/02/01/datastructure/
+
 ## License
 
 本项目基于GPLv3分发，详情请见[LICENSE](LICENSE)。
